@@ -1,6 +1,7 @@
 #動画データベース作成とサムネイル作成
 #2019-05-12
 #対象ファイルはメディア系コンテンツのみ
+#サムネイル作成時のみ再生時間取得
 
 from pathlib import Path
 import datetime
@@ -29,7 +30,7 @@ with client:
     i = 0
     for data in list(p.glob("**/*")):
         args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
-        duration_time = 0
+        duration_time = float(0)
         if( data.is_file() and (data.suffix == ('.mp4' or '.avi' or '.mkv' or '.ts'))):
             db.movie_client.insert_one({"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
 #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
@@ -49,6 +50,7 @@ with client:
                 for j in range(1,4): #切り出したサムネイル削除
                     thumnail_cut_file = Path(str(data) + str(j) + '.jpg')
                     thumnail_cut_file.unlink()
+                db.movie_client.update({"filename": str(data)},{"$set": {"duration": duration_time}})
             else:
                 continue
         except:
