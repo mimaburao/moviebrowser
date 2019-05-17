@@ -30,6 +30,7 @@ Dockerにてmongodを起動(port 28001)
 databaseの作成は検討予定なのと、Dockerを終了するとデータベースはなくなる。  
 
 # Usage
+python3 moviebrowser.pyと実行する。
 webブラウザー上で"localhost:5000/movieにアクセスする。  
 サムネイルをクリックすると動画の再生  
 NavBarにて並び替え  
