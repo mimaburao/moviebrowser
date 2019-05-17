@@ -21,6 +21,14 @@ image_path_dir = '/home/mima/work/moviebrowser/static/tmp/'
 #サムネイルの作成可否
 make_thumnail = False
 
+#メディアファイル判定
+def media_file_suffix(suffix):
+    mediafile = ['.mp4','.avi','.mkv', '.ts']
+    for media_flag in mediafile:
+        if(suffix == media_flag):
+            return True
+    return False
+
 # 再帰的な検索
 with client:
 
@@ -31,13 +39,13 @@ with client:
     for data in list(p.glob("**/*")):
         args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
         duration_time = float(0)
-        if( data.is_file() and (data.suffix == ('.mp4' or '.avi' or '.mkv' or '.ts'))):
+        if( data.is_file() and media_file_suffix( data.suffix )):
             db.movie_client.insert_one({"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
 #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
         else:
-            print("Error")
+            print(data.name)
         try:
-            if( make_thumnail and (data.suffix == ('.mp4' or '.avi' or '.mkv' or '.ts')) ):
+            if( make_thumnail and media_file_suffix( data.suffix ) ):
                 res = subprocess.check_output(args)
                 duration_time = float(res.decode('utf8')) #再生時間数
                 for j in range(1,4):  #三コマのサムネイル切り出し
