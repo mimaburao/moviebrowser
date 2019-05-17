@@ -2,35 +2,85 @@
 #2019-05-12
 #巳摩
 from flask import Flask
-from flask import render_template
+from flask import render_template,redirect,url_for
 from flask import request
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import Required
+from flask_bootstrap import Bootstrap
+from bson.objectid import ObjectId
 from pymongo import MongoClient
+import pymongo
 import datetime
+import subprocess
+import put_togarther_images
+import re
 
 app = Flask(__name__)
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'super secret' # CSRF対策でtokenの生成に必要
+bootstrap = Bootstrap(app)
 client = MongoClient('mongodb://localhost:28001/')
 db = client.testdb
+
+class SearchForm(FlaskForm):
+    search = StringField('search:', validators=[Required()])
+    submit = SubmitField('Submit')
+
+def db_read(data_all=[], search=None, index_howto='views'):
+    if(search == None):
+        cursor = db.movie_client.find().sort(index_howto, pymongo.DESCENDING).limit(1000)
+        for data in cursor:
+            images_data = put_togarther_images.read_images_from_zip(str(data["thumnail_file"]))
+            data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
+            data["date"] = datetime.datetime.fromtimestamp(data["date"])
+            data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
+        return data_all
+    else:
+        cursor = db.movie_client.find({"filename": { '$regex': '.*' + search + '.*'}}).sort(index_howto, pymongo.DESCENDING).limit(1000)
+        for data in cursor:
+            images_data = put_togarther_images.read_images_from_zip(str(data["thumnail_file"]))
+            data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
+            data["date"] = datetime.datetime.fromtimestamp(data["date"])
+            data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
+        return data_all
+
 
 @app.route('/', methods=['GET'])
 def hello_world():
     return 'Hello World!'
 
-@app.route('/movie')
-def show(data_all=[],image_filenames=[]):
-    for data in db.movie_client.find():
-        data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
-    for image_data in db.movie_client.find({},{ "_id": 0, "thumnail_file": 1 }):
-        my_dic = {}
-        print(image_data["thumnail_file"])
-        my_dic['image_name'] = 'static/' + str(image_data["thumnail_file"])
-        image_filenames.append(my_dic)
-    return render_template('show.html', data_all=str(data_all), image_filenames = image_filenames)
+@app.route('/movie', methods=['GET','POST'])
+def show_all(data_all=[]):
+    search = ''
+    index_howto = request.args.get('index_sort',default='views', type=str)
+    form = SearchForm()
+    if form.validate_on_submit():
+        search = form.search.data
+        form.search.data = ''
+    data_all.clear()
+    data_all = db_read(data_all, search, index_howto)
 
-@app.route('/hello/')
-@app.route('/hello/<name>')
-def hello(name=["巳摩","貴之"]):
-    return render_template('index.html', name=name)
+    return render_template('show.html', data_all=data_all,form=form, index_howto=index_howto)
 
+@app.route('/play', methods=['GET','POST'])
+def play():
+    for data in db.movie_client.find({"_id" : ObjectId(str(request.args.get('id_number')))}):
+        args = ['mpv']
+        args.append(data["filename"])
+        try:
+            subprocess.check_output(args)
+        except:
+            pass
+    db.movie_client.update({"_id" : ObjectId(str(request.args.get('id_number')))}, {'$inc': {'views': 1}})
+    return redirect(url_for('show_all'))
+
+@app.route('/star', methods=['GET'])
+def star():
+    db.movie_client.update({"_id" : ObjectId(str(request.args.get('id_number')))}, {'$set': {'star': int(request.args.get('stars'))}})
+    return redirect(url_for('show_all'))
 
 @app.route('/username/<name>')
 def show_user_profile(name):
@@ -41,17 +91,6 @@ def show_post():
     name = request.form.getlist('name')
     return render_template('index.html', name=name)
 
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if valid_login(request.form['username'],
-                       request.form['password']):
-            return log_the_user_in(request.form['username'])
-        else:
-            error = 'Invalid username/password'
-    # this is executed if the request method was GET or the
-    # credentials were invalid
 
 if __name__ == '__main__':
     app.run()

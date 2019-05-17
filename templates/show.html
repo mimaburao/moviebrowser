@@ -1,28 +1,68 @@
 {% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Movie Database{% endblock %}
+
 {% block content %}
-  <!-- Form
-  ================================================== -->
-<div class="form">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <p class="lead">
-          {% if data_all %}
-            動画情報 {{ data_all }}
-            {% for item in image_filenames %}
-              <img src={{item.image_name}}>
-              {% endfor %}
-          {% else %}
-            {{ message }}
-          {% endif %}
-        </p>
-        <form action="/post" method="POST" class="form-inline">
-          <label for="name">名前</label>
-          <input type="text" class="form-control" id="name" name="name" placeholder="Name">
-          <button type="submit" class="btn btn-default">送信する</button>
-        </form>
+<nav class="navbar navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">Navbar</a>
+    <button class="navbar-toggler" type="button"
+        data-toggle="collapse"
+        data-target="#navmenu1"
+        aria-controls="navmenu1"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu1">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/movie?index_sort=date">日付順</a>
+        <a class="nav-item nav-link" href="/movie?index_sort=access_time">アクセス順</a>
+        <a class="nav-item nav-link" href="/movie?index_sort=filename">名前順</a>
+        <a class="nav-item nav-link" href="/movie?index_sort=views">再生回数</a>
+        <a class="nav-item nav-link" href="/movie?index_sort=star">★</a>
       </div>
     </div>
+  </nav>
+
+{{ wtf.quick_form(form) }}
+<h1>Movie List</h1>
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thread>
+        <tr>
+          <th>サムネイル</th>
+          <th>視聴回数</th>
+          <th>☆</th>          
+          <th>日付</th>
+          <th>映像時間</th>
+          <th>アクセス日付</th>
+          <th>ファイル名</th>
+          <th>ファイルサイズ</th>          
+        </tr>
+      </thread>
+      <tbody>
+        {% for samp in data_all %}
+        <tr>
+            <td><a href='/play?id_number={{ samp["_id"] }}'> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td>{{ samp["views"] }}</td>
+          <td>
+            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
+            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-primary">★</a>
+            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-primary">★★</a>
+            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-primary">★★★</a></td>
+          
+          <td>{{ samp["date"] }}</td>
+          <td>{{ samp["duration"] }}</td>
+          <td>{{ samp["access_time"] }}</td>
+          <td>{{ samp["filename"] }}</td>
+          <td>{{ samp["size"] }}</td>
+        </tr>
+        {% else %}
+          <td>no entry exist!</td>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </div>
+
 {% endblock %}
