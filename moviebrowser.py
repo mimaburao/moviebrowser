@@ -11,6 +11,8 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 import pymongo
 import datetime,subprocess,re
+from io import BytesIO
+
 #mylibrary
 import put_togarther_images
 
@@ -22,16 +24,18 @@ client = MongoClient('mongodb://localhost:28001/')
 db = client.testdb
 
 index_order = '' #並び方の記憶
+thumnail_images = {}  #サムネの辞書形式での画像データ一覧
 
 class SearchForm(FlaskForm):
     search = StringField('検索ファイル名', validators=[Required()])
     submit = SubmitField('検索')
 
-def db_read(data_all=[], search=None, index_howto='views'):
+#サムネイル一覧を辞書として保存している場合
+def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail_images={}):
     if(search == None):
-        cursor = db.movie_client.find().sort(index_howto, pymongo.DESCENDING).limit(1000)
+        cursor = db.movie_client.find().sort(index_howto, pymongo.DESCENDING)
         for data in cursor:
-            images_data = put_togarther_images.read_images_from_zip(str(data["thumnail_file"]))
+            images_data = thumnail_images.get(data["thumnail_file"]) #サムネの情報を持っているか
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
             data["date"] = datetime.datetime.fromtimestamp(data["date"])
             data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
@@ -40,9 +44,9 @@ def db_read(data_all=[], search=None, index_howto='views'):
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return data_all
     else:
-        cursor = db.movie_client.find({"filename": { '$regex': '.*' + search + '.*'}}).sort(index_howto, pymongo.DESCENDING).limit(1000)
+        cursor = db.movie_client.find({"filename": { '$regex': '.*' + search + '.*'}}).sort(index_howto, pymongo.DESCENDING)
         for data in cursor:
-            images_data = put_togarther_images.read_images_from_zip(str(data["thumnail_file"]))
+            images_data = thumnail_images.get(data["thumnail_file"]) #サムネの情報を持っているか
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
             data["date"] = datetime.datetime.fromtimestamp(data["date"])
             data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
@@ -51,7 +55,6 @@ def db_read(data_all=[], search=None, index_howto='views'):
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return data_all
 
-
 @app.route('/', methods=['GET'])
 def hello_world():
     return 'Hello World!'
@@ -59,6 +62,7 @@ def hello_world():
 @app.route('/movie', methods=['GET','POST'])
 def show_all(data_all=[]):
     global index_order
+    global thumnail_images
     search = ''
     index_howto = request.args.get('index_sort',default='views', type=str)
     if( index_order != '' ):
@@ -70,7 +74,11 @@ def show_all(data_all=[]):
         search = form.search.data
         form.search.data = ''
     data_all.clear()
-    data_all = db_read(data_all, search, index_howto)
+    if( thumnail_images == {} ):
+        put_togarther_images.set_images_from_zip_all(thumnail_images)
+        data_all = db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
+    else:
+        data_all = db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
 
     return render_template('show.html', data_all=data_all,form=form, index_howto=index_howto)
 

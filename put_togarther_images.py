@@ -37,4 +37,19 @@ def read_images_from_zip(filename):
 
     return file_data
 
+#一気にzipのサムネイルを読み込み、辞書とする
+def set_images_from_zip_all(thumnail_images={}):
+    file_data = BytesIO()
+    try:
+        with zipfile.ZipFile(image_path_dir + 'thumnail.zip', 'r') as zip_data:
+            # ファイルリスト取得
+            infos = zip_data.infolist()
+            
+            for info in infos:
+                file_data = base64.b64encode(zip_data.read(info.filename)).decode("utf-8")
+                thumnail_images[info.filename] = file_data
+    except zipfile.BadZipFile:
+        print(traceback.format_exc())
+    return thumnail_images
+
 
