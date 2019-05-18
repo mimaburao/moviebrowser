@@ -2,8 +2,7 @@
 #2019-05-12
 #巳摩
 from flask import Flask
-from flask import render_template,redirect,url_for
-from flask import request
+from flask import render_template,redirect,url_for,request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
@@ -11,10 +10,9 @@ from flask_bootstrap import Bootstrap
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 import pymongo
-import datetime
-import subprocess
+import datetime,subprocess,re
+#mylibrary
 import put_togarther_images
-import re
 
 app = Flask(__name__)
 app = Flask(__name__)
@@ -24,8 +22,8 @@ client = MongoClient('mongodb://localhost:28001/')
 db = client.testdb
 
 class SearchForm(FlaskForm):
-    search = StringField('search:', validators=[Required()])
-    submit = SubmitField('Submit')
+    search = StringField('検索ファイル名', validators=[Required()])
+    submit = SubmitField('検索')
 
 def db_read(data_all=[], search=None, index_howto='views'):
     if(search == None):
@@ -35,6 +33,8 @@ def db_read(data_all=[], search=None, index_howto='views'):
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
             data["date"] = datetime.datetime.fromtimestamp(data["date"])
             data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data["duration"] = datetime.timedelta(seconds= data["duration"])
+            data["size"] = int(data["size"] / 1024 / 1024) #Mbの表示のため
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return data_all
     else:
@@ -44,6 +44,8 @@ def db_read(data_all=[], search=None, index_howto='views'):
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
             data["date"] = datetime.datetime.fromtimestamp(data["date"])
             data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data["duration"] = datetime.timedelta(seconds= data["duration"])
+            data["size"] = int(data["size"] / 1024 /1024) #Mbの表示のため
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return data_all
 
@@ -68,7 +70,7 @@ def show_all(data_all=[]):
 @app.route('/play', methods=['GET','POST'])
 def play():
     for data in db.movie_client.find({"_id" : ObjectId(str(request.args.get('id_number')))}):
-        args = ['mpv']
+        args = ['mpv','--geometry=50%','--volume=80']
         args.append(data["filename"])
         try:
             subprocess.check_output(args)
