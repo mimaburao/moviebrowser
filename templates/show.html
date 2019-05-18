@@ -3,8 +3,8 @@
 {% block title %}Movie Database{% endblock %}
 
 {% block content %}
-<nav class="navbar navbar-dark bg-dark">
-    <a href="#" class="navbar-brand">Navbar</a>
+<nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
+    <a href="#" class="navbar-brand">MovieBrowser</a>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
         data-target="#navmenu1"
@@ -24,8 +24,8 @@
     </div>
   </nav>
 
-{{ wtf.quick_form(form) }}
-<h1>Movie List</h1>
+  {{ wtf.quick_form(form) }}
+  
 <div class="table-responsive">
     <table class="table table-striped">
       <thread>
@@ -37,7 +37,7 @@
           <th>映像時間</th>
           <th>アクセス日付</th>
           <th>ファイル名</th>
-          <th>ファイルサイズ</th>          
+          <th>ファイルサイズ(MByte)</th>          
         </tr>
       </thread>
       <tbody>
@@ -54,7 +54,7 @@
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
           <td>{{ samp["access_time"] }}</td>
-          <td>{{ samp["filename"] }}</td>
+          <td>{{ samp["name"] }}</td>
           <td>{{ samp["size"] }}</td>
         </tr>
         {% else %}
