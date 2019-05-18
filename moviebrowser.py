@@ -21,6 +21,8 @@ bootstrap = Bootstrap(app)
 client = MongoClient('mongodb://localhost:28001/')
 db = client.testdb
 
+index_order = '' #並び方の記憶
+
 class SearchForm(FlaskForm):
     search = StringField('検索ファイル名', validators=[Required()])
     submit = SubmitField('検索')
@@ -56,8 +58,13 @@ def hello_world():
 
 @app.route('/movie', methods=['GET','POST'])
 def show_all(data_all=[]):
+    global index_order
     search = ''
     index_howto = request.args.get('index_sort',default='views', type=str)
+    if( index_order != '' ):
+        print(index_order)
+        index_howto = index_order
+        index_order = ''
     form = SearchForm()
     if form.validate_on_submit():
         search = form.search.data
@@ -69,6 +76,7 @@ def show_all(data_all=[]):
 
 @app.route('/play', methods=['GET','POST'])
 def play():
+    global index_order
     for data in db.movie_client.find({"_id" : ObjectId(str(request.args.get('id_number')))}):
         args = ['mpv','--geometry=50%','--volume=80']
         args.append(data["filename"])
@@ -77,10 +85,13 @@ def play():
         except:
             pass
     db.movie_client.update({"_id" : ObjectId(str(request.args.get('id_number')))}, {'$inc': {'views': 1}})
+    index_order = str(request.args.get("index"))
     return redirect(url_for('show_all'))
 
 @app.route('/star', methods=['GET'])
 def star():
+    global index_order
+    index_order = str(request.args.get("index"))
     db.movie_client.update({"_id" : ObjectId(str(request.args.get('id_number')))}, {'$set': {'star': int(request.args.get('stars'))}})
     return redirect(url_for('show_all'))
 
