@@ -18,6 +18,15 @@ def put_togarther_images(filename):
         if(image_path.is_file):
             new_zip.write(image_path_dir + filename, arcname=filename)
 
+def add_zip(image_filename):
+    "サムネイルを追加する"
+    try:
+        p = Path(image_path_dir + image_filename)
+        with zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="a") as zip_data, p:
+            zip_data.write( image_path_dir + 'tmp/' + str(p.name) )
+    except:
+        print('Not archive')
+
 def read_images_from_zip(filename):
     """zipからファイル名を指定して読み込む(base64形式)"""
     file_data = BytesIO()

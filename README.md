@@ -15,7 +15,7 @@ movie thumnail manager
 Flask  
 Bootstarp  
 python 3.4+  
-MongoDB(on Docker)    
+MongoDB(on Docker)  
 Linux Mint 19.1にて動作確認  
 
 # Setup
@@ -36,11 +36,14 @@ webブラウザー上で"localhost:5000/movieにアクセスする。
 各項目クリックにて並び替え（降冪順）  
 検索窓にてファイルの検索  
 ★をクリックすると星の数（最高３）を変えることができる。０にするには星の表示をクリック  
+NavBarのプルダウン「更新」で、メディアファイルの更新作業
 
 問題点  
-* 1000件が表示条件（データベースのアクセス向上の為）
+* 複数のメディア場所を探索できない
+* データベースの削除できない
 * デザイン
-* 並び替えがファイルのアクセスや★の変更をすると再生回数の並び順になってしまう
+
+
 # Licence
 This software is released under the MIT License, see LICENSE.md.
 

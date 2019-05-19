@@ -76,9 +76,12 @@ def star():
     movie_database.set_star(str(request.args.get('id_number')), int(request.args.get('stars')))
     return redirect(url_for('show_all'))
 
-@app.route('/username/<name>')
-def show_user_profile(name):
-    return render_template('index.html', name=name)
+@app.route('/update')
+def update():
+    global index_order
+    index_order = str(request.args.get("index"))
+    movie_database.movie_database_update( '/mnt/drive_d/download2' )
+    return redirect(url_for('show_all'))
 
 @app.route('/post', methods=['POST'])
 def show_post():
