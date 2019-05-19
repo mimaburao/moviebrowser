@@ -15,11 +15,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/movie?index_sort=date">日付順</a>
-        <a class="nav-item nav-link" href="/movie?index_sort=access_time">アクセス順</a>
-        <a class="nav-item nav-link" href="/movie?index_sort=filename">名前順</a>
-        <a class="nav-item nav-link" href="/movie?index_sort=views">再生回数</a>
-        <a class="nav-item nav-link" href="/movie?index_sort=star">★</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
       </div>
     </div>
   </nav>
@@ -31,12 +31,12 @@
       <thread>
         <tr>
           <th>サムネイル</th>
-          <th>視聴回数</th>
-          <th>☆</th>          
-          <th>日付</th>
-          <th>映像時間</th>
-          <th>アクセス日付</th>
-          <th>ファイル名</th>
+          <th><a class="btn" href="/movie?index_sort=views" role="button">views</a></th>
+          <th><a class="btn" href="/movie?index_sort=star" role="button">☆</a></th>          
+          <th><a class="btn" href="/movie?index_sort=date" role="button">日付</a></th>
+          <th>時間</th>
+          <th><a class="btn" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a class="btn" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
           <th>ファイルサイズ(MByte)</th>          
         </tr>
       </thread>
@@ -44,7 +44,7 @@
         {% for samp in data_all %}
         <tr>
             <td><a href="/play?id_number={{ samp["_id"] }}&index={{ index_howto }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
-            <td>{{ samp["views"] }}</td>
+            <td>{{ samp["views"] }}回視聴</td>
           <td>
             <a href="/star?stars=0&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-info">★{{ samp["star"] }}</a>
             <a href="/star?stars=1&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★</a>
