@@ -15,10 +15,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/movie?index={{ index_howto }}">一覧表示</a>
         <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="/manager?index={{ index_howto }}">管理</a>
         <a class="nav-item nav-link" href="/update?index={{ index_howto }}">更新</a>
       </div>
     </div>
@@ -43,7 +43,7 @@
       <tbody>
         {% for samp in data_all %}
         <tr>
-            <td><a href="/play?id_number={{ samp["_id"] }}&index={{ index_howto }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td><a href="/rethumnail?id_number={{ samp["_id"] }}&index={{ index_howto }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
             <td>{{ samp["views"] }}回視聴</td>
           <td>
             <a href="/star?stars=0&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-info">★{{ samp["star"] }}</a>

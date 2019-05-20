@@ -115,28 +115,31 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
 #サムネイル再作成
 #thumanil_type = 'InterVal' 等間隔作成
 #              = 'Random' ランダム作成
-def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'InterVal',image_path_dir = '/home/mima/work/moviebrowser/static/tmp/'):
+def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/'):
     client = MongoClient('mongodb://localhost:28001/')
-    data = Path(filename)
-    with client,data:
+    file_data = Path(filename)
+    with client,file_data:
         db = client.testdb
         try:
-            if( data.is_file() and media_file_suffix( data.suffix ) ):
+            args = ['ffprobe', '-v', 'error', '-i', str(file_data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
+            duration_time = float(0)
+            if( file_data.is_file() and media_file_suffix( file_data.suffix ) ):
                 res = subprocess.check_output(args)
                 duration_time = float(res.decode('utf8')) #再生時間数
                 for i in range(1,thumnail_frames + 1):  #サムネイル切り出し
-                    if( thumanil_type == 'Random'):
+                    if( thumnail_type == 'Random'):
                         cut_time = random.randint(0,int(duration_time))
                     else:
                         cut_time = duration_time * i / (thumnail_frames + 1)
-                    cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-t','1','-r','1','-i', str(data), str(data) + str(i) +'.jpg']
+                    cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-t','1','-r','1','-i', str(file_data), str(file_data) + str(i) +'.jpg']
                     subprocess.check_output(cut_args)
-                thumnal_args = ['montage', str(data) + '1' + '.jpg', str(data) + '2' + '.jpg', str(data) + '3' + '.jpg', '-tile', 'x1', '-geometry', '120x120+1+1', image_path_dir + (data.name).replace(" ","") + '.jpg'] #半角スペース対策済み
+                thumnal_args = ['montage', str(file_data) + '1' + '.jpg', str(file_data) + '2' + '.jpg', str(file_data) + '3' + '.jpg', '-tile', 'x1', '-geometry', '120x120+1+1', image_path_dir + (file_data.name).replace(" ","") + '.jpg'] #半角スペース対策済み
                 subprocess.check_output(thumnal_args) #各動画サムネ作成
                 for i in range(1,thumnail_frames + 1): #切り出したサムネイル削除
-                    thumnail_cut_file = Path(str(data) + str(i) + '.jpg')
+                    thumnail_cut_file = Path(str(file_data) + str(i) + '.jpg')
                     thumnail_cut_file.unlink()
-                db.movie_client.update({"filename": str(data)},{"$set": {"duration": duration_time}})
+                db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": duration_time}})
+                put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
             else:
                 print("Error")
         except:

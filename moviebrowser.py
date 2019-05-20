@@ -55,6 +55,45 @@ def show_all(data_all=[]):
 
     return render_template('show.html', data_all=data_all,form=form, index_howto=index_howto)
 
+@app.route('/manager', methods=['GET','POST'])
+def manager(data_all=[]):
+    global index_order
+    global thumnail_images
+    search = ''
+    index_howto = request.args.get('index_sort',default='views', type=str)
+
+    if( index_order != '' ):
+        print(index_order)
+        index_howto = index_order
+        index_order = ''
+    
+    form = SearchForm()
+    if form.validate_on_submit():
+        search = form.search.data
+        form.search.data = ''
+    
+    data_all.clear()
+    if( thumnail_images == {} ):
+        put_togarther_images.set_images_from_zip_all(thumnail_images)
+        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
+    else:
+        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
+
+    return render_template('manager.html', data_all=data_all,form=form, index_howto=index_howto)
+
+@app.route('/rethumnail', methods=['GET','POST'])
+def thumnail_rewrite():
+    global index_order
+    global thumnail_images
+    for data in movie_database.find_movie_database( str(request.args.get('id_number'))):
+        try:
+            movie_database.rethumnail_make(data["filename"])
+        except:
+            pass
+    index_order = str(request.args.get("index"))
+    thumnail_images.clear()
+    return redirect(url_for('manager'))
+
 @app.route('/play', methods=['GET','POST'])
 def play():
     global index_order

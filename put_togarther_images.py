@@ -18,14 +18,40 @@ def put_togarther_images(filename):
         if(image_path.is_file):
             new_zip.write(image_path_dir + filename, arcname=filename)
 
-def add_zip(image_filename):
+def add_zip(image_filename, image_path_tmp_dir= image_path_dir):
     "サムネイルを追加する"
     try:
-        p = Path(image_path_dir + image_filename)
-        with zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="a") as zip_data, p:
-            zip_data.write( image_path_dir + 'tmp/' + str(p.name) )
+        p = Path(image_path_tmp_dir + image_filename)
+        with zipfile.ZipFile(image_path_tmp_dir + 'thumnail.zip', mode="a") as zip_data, p:
+            zip_data.write( image_path_tmp_dir + 'tmp/' + str(p.name) )
     except:
         print('Not archive')
+
+def update_zip(image_filename):
+    "Zip中の目的ファイルを削除して、追加する"
+    try:
+        zip = zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="r")
+        with zip:
+            zip.extractall(image_path_dir+ 'zip_tmp')
+            with Path(image_path_dir+ 'zip_tmp') as p:
+                for file in list(p.glob("**/*")):
+                    if( str(file.name) == image_filename ):
+                        file.unlink()
+                    else:
+                        print ('NO update')
+        with Path(image_path_dir + 'thumnail.zip') as zip_file:
+            zip_file.unlink()            
+        with zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="a", compression=zipfile.ZIP_STORED) as zip_file:
+            with Path(image_path_dir+ 'zip_tmp') as p:
+                for file in list(p.glob("**/*")):
+                    print(str(file.name))
+                    zip_file.write( image_path_dir + "zip_tmp/" + str(file.name), arcname=str(file.name) )
+        p = Path(image_path_dir + image_filename)
+        with zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="a") as zip_data, p:
+            zip_data.write( image_path_dir + str(p.name), arcname=str(p.name) )
+    except:
+        print('Not archive')
+    return True
 
 def read_images_from_zip(filename):
     """zipからファイル名を指定して読み込む(base64形式)"""
