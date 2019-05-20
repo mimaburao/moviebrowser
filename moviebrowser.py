@@ -37,7 +37,6 @@ def show_all(data_all=[]):
     index_howto = request.args.get('index_sort',default='views', type=str)
 
     if( index_order != '' ):
-        print(index_order)
         index_howto = index_order
         index_order = ''
     
@@ -60,10 +59,11 @@ def manager(data_all=[]):
     global index_order
     global thumnail_images
     search = ''
+    search_id = ''
+    search_id = request.args.get('search_item', default='', type=str)
     index_howto = request.args.get('index_sort',default='views', type=str)
 
     if( index_order != '' ):
-        print(index_order)
         index_howto = index_order
         index_order = ''
     
@@ -75,10 +75,10 @@ def manager(data_all=[]):
     data_all.clear()
     if( thumnail_images == {} ):
         put_togarther_images.set_images_from_zip_all(thumnail_images)
-        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
+        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images, search_id)
     else:
-        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
-
+        data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images, search_id)
+    
     return render_template('manager.html', data_all=data_all,form=form, index_howto=index_howto)
 
 @app.route('/rethumnail', methods=['GET','POST'])
@@ -92,7 +92,7 @@ def thumnail_rewrite():
             pass
     index_order = str(request.args.get("index"))
     thumnail_images.clear()
-    return redirect(url_for('manager'))
+    return redirect(url_for('manager',search_item=str(request.args.get('id_number'))))
 
 @app.route('/play', methods=['GET','POST'])
 def play():

@@ -59,11 +59,14 @@ def make_database( p, image_path_dir, make_thumnail, thumnail_frames = 3):
     return True
 
 #サムネイル一覧を辞書として保存している場合
-def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail_images={}):
+def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail_images={}, search_id=''):
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
-        cursor = db.movie_client.find({"filename": { '$regex': '.*' + search + '.*'}}).sort(index_howto, pymongo.DESCENDING)
+        if(search_id == ''):
+            cursor = db.movie_client.find({"filename": { '$regex': '.*' + search + '.*'}}).sort(index_howto, pymongo.DESCENDING)
+        else:
+            cursor = find_movie_database(search_id)
         for data in cursor:
             images_data = thumnail_images.get(data["thumnail_file"]) #サムネの画像を持っているか
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
@@ -121,7 +124,7 @@ def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',imag
     with client,file_data:
         db = client.testdb
         try:
-            args = ['ffprobe', '-v', 'error', '-i', str(file_data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
+            args = ['ffprobe', '-v', 'error', '-loglevel', 'quiet', '-i', str(file_data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
             duration_time = float(0)
             if( file_data.is_file() and media_file_suffix( file_data.suffix ) ):
                 res = subprocess.check_output(args)
@@ -131,7 +134,7 @@ def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',imag
                         cut_time = random.randint(0,int(duration_time))
                     else:
                         cut_time = duration_time * i / (thumnail_frames + 1)
-                    cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-t','1','-r','1','-i', str(file_data), str(file_data) + str(i) +'.jpg']
+                    cut_args = ['ffmpeg', '-ss', str(int(cut_time)), '-loglevel', 'quiet', '-t','1','-r','1','-i', str(file_data), str(file_data) + str(i) +'.jpg']
                     subprocess.check_output(cut_args)
                 thumnal_args = ['montage', str(file_data) + '1' + '.jpg', str(file_data) + '2' + '.jpg', str(file_data) + '3' + '.jpg', '-tile', 'x1', '-geometry', '120x120+1+1', image_path_dir + (file_data.name).replace(" ","") + '.jpg'] #半角スペース対策済み
                 subprocess.check_output(thumnal_args) #各動画サムネ作成
