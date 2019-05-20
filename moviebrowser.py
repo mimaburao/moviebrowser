@@ -22,6 +22,9 @@ index_order = '' #並び方の記憶
 thumnail_images = {}  #サムネの辞書形式での画像データ一覧
 
 class SearchForm(FlaskForm):
+    """
+    WTFフォームの準備クラス
+    """
     search = StringField('検索ファイル名', validators=[Required()])
     submit = SubmitField('検索')
 
@@ -124,12 +127,6 @@ def update():
     index_order = str(request.args.get("index"))
     movie_database.movie_database_update( '/mnt/drive_d/download2' )
     return redirect(url_for('show_all'))
-
-@app.route('/post', methods=['POST'])
-def show_post():
-    name = request.form.getlist('name')
-    return render_template('index.html', name=name)
-
 
 if __name__ == '__main__':
     app.run()

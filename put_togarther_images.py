@@ -13,13 +13,14 @@ from pathlib import Path
 image_path_dir = '/home/mima/work/moviebrowser/static/'
 
 def put_togarther_images(filename):
+    """thumnail.zipファイルに書き込む"""
     with zipfile.ZipFile(image_path_dir + 'thumnail.zip', 'w', compression=zipfile.ZIP_STORED) as new_zip:
         image_path =Path('/home/mima/work/moviebrowser/static/' + filename)
         if(image_path.is_file):
             new_zip.write(image_path_dir + filename, arcname=filename)
 
 def add_zip(image_filename, image_path_tmp_dir= image_path_dir):
-    "サムネイルを追加する"
+    """サムネイルを追加する"""
     try:
         p = Path(image_path_tmp_dir + image_filename)
         with zipfile.ZipFile(image_path_tmp_dir + 'thumnail.zip', mode="a") as zip_data, p:
@@ -28,7 +29,7 @@ def add_zip(image_filename, image_path_tmp_dir= image_path_dir):
         print('Not archive')
 
 def update_zip(image_filename):
-    "Zip中の目的ファイルを削除して、追加する"
+    """Zip中の目的ファイルを削除して、追加する"""
     try:
         zip = zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="r")
         with zip:
@@ -71,8 +72,8 @@ def read_images_from_zip(filename):
 
     return file_data
 
-#一気にzipのサムネイルを読み込み、辞書とする
 def set_images_from_zip_all(thumnail_images={}):
+    """一気にzipのサムネイルを読み込み、辞書とする"""
     file_data = BytesIO()
     try:
         with zipfile.ZipFile(image_path_dir + 'thumnail.zip', 'r') as zip_data:

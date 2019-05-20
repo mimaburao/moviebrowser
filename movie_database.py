@@ -13,16 +13,16 @@ import put_togarther_images
 import sys,random
 from bson.objectid import ObjectId
 
-#メディアファイル判定
 def media_file_suffix(suffix):
+    """メディアファイル判定"""
     mediafile = ['.mp4','.avi','.mkv', '.ts']
     for media_flag in mediafile:
         if(suffix == media_flag):
             return True
     return False
 
-# 再帰的な検索
 def make_database( p, image_path_dir, make_thumnail, thumnail_frames = 3):
+    """再帰的な検索"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -58,8 +58,8 @@ def make_database( p, image_path_dir, make_thumnail, thumnail_frames = 3):
             print (data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
     return True
 
-#サムネイル一覧を辞書として保存している場合
 def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail_images={}, search_id=''):
+    """サムネイル一覧を辞書として保存している場合"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -77,8 +77,8 @@ def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
     return data_all
 
-#データベースより新しいメディアファイルがあればデータベース更新
 def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '/home/mima/work/moviebrowser/static/tmp/' ):
+    """データベースより新しいメディアファイルがあればデータベース更新"""
     client = MongoClient('mongodb://localhost:28001/')
     p = Path(media_dir)
     with client,p:
@@ -115,10 +115,12 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
                         print ("Error.")
     return True
 
-#サムネイル再作成
-#thumanil_type = 'InterVal' 等間隔作成
-#              = 'Random' ランダム作成
 def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/'):
+    """
+    サムネイル再作成
+    thumanil_type = 'InterVal' 等間隔作成
+                  = 'Random' ランダム作成
+    """
     client = MongoClient('mongodb://localhost:28001/')
     file_data = Path(filename)
     with client,file_data:
@@ -149,6 +151,7 @@ def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',imag
             print ("Error.")
 
 def find_movie_database(id_number=''):
+    """_idよりデータベース検索"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -156,6 +159,7 @@ def find_movie_database(id_number=''):
     return cursor
 
 def set_star(id_number='', star=0):
+    """starを記録（最高３）"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -163,6 +167,7 @@ def set_star(id_number='', star=0):
     return True
 
 def countup_views(id_number='', views=0):
+    """再生数を数える"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -170,15 +175,20 @@ def countup_views(id_number='', views=0):
     return True
 
 def database_sum_count():
+    """データベースの件数を数える"""
     with MongoClient('mongodb://localhost:28001/') as client:
         db =client.testdb
         return db.movie_client.find().count()
         
 def main(argv):
+    """
+    option
+    args = サムネイル画像置き場(最後の/は必要ない)
+    """
     # Pathオブジェクトを生成
     p = Path(argv[0])
     #画像置き場
-    image_path_dir = '/home/mima/work/moviebrowser/static/tmp/'
+    image_path_dir = '/home/mima/work/moviebrowser/static/tmp'
     #サムネイルの作成可否
     make_thumnail = False
     thumnail_frames = 3
@@ -186,7 +196,6 @@ def main(argv):
     make_database( p, image_path_dir, make_thumnail,thumnail_frames)
 
 if __name__ == "__main__":
-#movie_database_make.py path
     try:
         main(sys.argv[1:])
     except:
