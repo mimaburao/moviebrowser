@@ -4,7 +4,7 @@
 
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
-    <a href="#" class="navbar-brand">MovieBrowser</a>
+    <a href="#" class="navbar-brand">Manger (Total number of files:{{ sum_database_count }})</a>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
         data-target="#navmenu1"
@@ -25,7 +25,7 @@
   </nav>
 
   {{ wtf.quick_form(form) }}
-  
+  <div class="alert alert-warning" role="alert">ファイル変更</div>  
 <div class="table-responsive">
     <table class="table table-striped">
       <thread>

@@ -169,6 +169,11 @@ def countup_views(id_number='', views=0):
         db.movie_client.update({"_id" : ObjectId(id_number)}, {'$inc': {'views': 1}})
     return True
 
+def database_sum_count():
+    with MongoClient('mongodb://localhost:28001/') as client:
+        db =client.testdb
+        return db.movie_client.find().count()
+        
 def main(argv):
     # Pathオブジェクトを生成
     p = Path(argv[0])

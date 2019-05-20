@@ -79,7 +79,10 @@ def manager(data_all=[]):
     else:
         data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images, search_id)
     
-    return render_template('manager.html', data_all=data_all,form=form, index_howto=index_howto)
+    sum_database_count = 0
+    sum_database_count = movie_database.database_sum_count()
+    
+    return render_template('manager.html', data_all=data_all,form=form, index_howto=index_howto, sum_database_count=sum_database_count)
 
 @app.route('/rethumnail', methods=['GET','POST'])
 def thumnail_rewrite():
