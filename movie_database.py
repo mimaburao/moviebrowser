@@ -93,38 +93,38 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
     p = Path(media_dir)
     with client,p:
         db = client.testdb
-        for data in list(p.glob("**/*")):
-            cursor = db.movie_client.find().sort("date", pymongo.DESCENDING).limit(1)
-            for cursor_data in cursor:
-                if( data.stat().st_ctime > cursor_data["date"] ):
-                    args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
-                    duration_time = float(0)
-                    if( data.is_file() and media_file_suffix( data.suffix )):
-                        db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
-                        #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
-                    else:
-                        print(data.name)
-                    try:
-                        if( data.is_file() and media_file_suffix( data.suffix ) ):
-                            res = subprocess.check_output(args)
-                            duration_time = float(res.decode('utf8')) #再生時間数
-                            for i in range(1,thumnail_frames + 1):  #三コマのサムネイル切り出し
-                                cut_time = duration_time * i / (thumnail_frames + 1)
-                                cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-t','1','-r','1','-i', str(data), str(data) + str(i) +'.jpg']
-                                subprocess.check_output(cut_args)
-                            thumnal_args = ['montage', str(data) + '1' + '.jpg', str(data) + '2' + '.jpg', str(data) + '3' + '.jpg', '-tile', 'x1', '-geometry', '120x120+1+1', image_path_dir + (data.name).replace(" ","") + '.jpg'] #半角スペース対策済み
-                            subprocess.check_output(thumnal_args) #各動画サムネ作成
-                            for i in range(1,thumnail_frames + 1): #切り出したサムネイル削除
-                                thumnail_cut_file = Path(str(data) + str(i) + '.jpg')
-                                thumnail_cut_file.unlink()
-                            db.movie_client.update({"filename": str(data)},{"$set": {"duration": duration_time}})
-                            put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
+        cursor = db.movie_client.find().sort("date", pymongo.DESCENDING).limit(1)
+        for cursor_data in cursor:
+            for data in list(p.glob("**/*")):
+                if( media_file_suffix( data.suffix ) ):
+                    if( data.stat().st_ctime > cursor_data["date"] ):
+                        args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
+                        duration_time = float(0)
+                        if( data.is_file() and media_file_suffix( data.suffix )):
+                            db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
+                            #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
                         else:
-                            continue
-                    except:
-                        print ("Error.")
+                            print(data.name)
+                        try:
+                            if( data.is_file() and media_file_suffix( data.suffix ) ):
+                                res = subprocess.check_output(args)
+                                duration_time = float(res.decode('utf8')) #再生時間数
+                                for i in range(1,thumnail_frames + 1):  #三コマのサムネイル切り出し
+                                    cut_time = duration_time * i / (thumnail_frames + 1)
+                                    cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-t','1','-r','1','-i', str(data), str(data) + str(i) +'.jpg']
+                                    subprocess.check_output(cut_args)
+                                thumnal_args = ['montage', str(data) + '1' + '.jpg', str(data) + '2' + '.jpg', str(data) + '3' + '.jpg', '-tile', 'x1', '-geometry', '120x120+1+1', image_path_dir + (data.name).replace(" ","") + '.jpg'] #半角スペース対策済み
+                                subprocess.check_output(thumnal_args) #各動画サムネ作成
+                                for i in range(1,thumnail_frames + 1): #切り出したサムネイル削除
+                                    thumnail_cut_file = Path(str(data) + str(i) + '.jpg')
+                                    thumnail_cut_file.unlink()
+                                db.movie_client.update({"filename": str(data)},{"$set": {"duration": duration_time}})
+                                put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
+                            else:
+                                continue
+                        except:
+                            print ("Error.")
     return True
-
 
 def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/'):
     """
