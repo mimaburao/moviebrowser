@@ -59,7 +59,7 @@ def make_database( p, image_path_dir, make_thumnail, thumnail_frames = 3):
     return True
 
 def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail_images={}, search_id=''):
-    """サムネイル一覧を辞書として保存している場合"""
+    """データベースとサムネイルを読み込む"""
     client = MongoClient('mongodb://localhost:28001/')
     with client:
         db = client.testdb
@@ -77,6 +77,16 @@ def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
     return data_all
 
+def remove_movie_database(id_number=''):
+    """_id情報よりデータベースを削除する"""
+    with MongoClient('mongodb://localhost:28001/') as client:
+        db = client.testdb
+        for data in db.movie_client.find({"_id": ObjectId(id_number)}):
+            put_togarther_images.update_zip( '',data["thumnail_file"] )
+        db.movie_client.delete_one( {"_id": ObjectId(id_number)})
+    return True
+    
+
 def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '/home/mima/work/moviebrowser/static/tmp/' ):
     """データベースより新しいメディアファイルがあればデータベース更新"""
     client = MongoClient('mongodb://localhost:28001/')
@@ -84,7 +94,7 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
     with client,p:
         db = client.testdb
         for data in list(p.glob("**/*")):
-            cursor = db.movie_client.find().limit(1).sort("date", -1)
+            cursor = db.movie_client.find().sort("date", pymongo.DESCENDING).limit(1)
             for cursor_data in cursor:
                 if( data.stat().st_ctime > cursor_data["date"] ):
                     args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
@@ -114,6 +124,7 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
                     except:
                         print ("Error.")
     return True
+
 
 def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/'):
     """

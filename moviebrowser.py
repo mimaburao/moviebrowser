@@ -124,9 +124,21 @@ def star():
 @app.route('/update')
 def update():
     global index_order
+    global thumnail_images
     index_order = str(request.args.get("index"))
     movie_database.movie_database_update( '/mnt/drive_d/download2' )
+    thumnail_images.clear()
     return redirect(url_for('show_all'))
+
+@app.route('/remove')
+def remove():
+    global index_order
+    global thumnail_images
+    movie_database.remove_movie_database( str(request.args.get('id_number')) )
+#    index_order = str(request.args.get("index"))
+    thumnail_images.clear()
+    return redirect(url_for('manager', index_sort=str(request.args.get("index"))))
+
 
 if __name__ == '__main__':
     app.run()

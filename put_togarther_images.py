@@ -28,8 +28,13 @@ def add_zip(image_filename, image_path_tmp_dir= image_path_dir):
     except:
         print('Not archive')
 
-def update_zip(image_filename):
-    """Zip中の目的ファイルを削除して、追加する"""
+def update_zip(image_filename='', del_thumnail=''):
+    """Zip中の目的ファイルを更新する（削除して、追加する）
+    del_thumnailの指定時は削除のみ
+    option
+    image_filename = 更新するサムネイル画像ファイル名
+    del_thumnail = 削除するファイル名
+    """
     try:
         zip = zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="r")
         with zip:
@@ -38,6 +43,8 @@ def update_zip(image_filename):
                 for file in list(p.glob("**/*")):
                     if( str(file.name) == image_filename ):
                         file.unlink()
+                    elif(str(file.name) == del_thumnail):
+                        file.unlink()
         with Path(image_path_dir + 'thumnail.zip') as zip_file:
             zip_file.unlink()            
         with zipfile.ZipFile(image_path_dir + 'thumnail.zip', mode="a", compression=zipfile.ZIP_STORED) as zip_file:
@@ -45,6 +52,8 @@ def update_zip(image_filename):
                 for file in list(p.glob("**/*")):
                     if ( file.suffix == '.jpg'):  #勝手にフォルダーを作成する対策
                         zip_file.write( image_path_dir + "zip_tmp/" + str(file.name), arcname=str(file.name) )
+                if( image_filename == '' ):
+                    return print("remove only")
                 zip_file.write( image_path_dir + image_filename, arcname=image_filename )
                 with Path(image_path_dir + image_filename) as rethumnail_image_file:
                     rethumnail_image_file.unlink()

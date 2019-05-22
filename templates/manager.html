@@ -54,7 +54,7 @@
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
           <td>{{ samp["access_time"] }}</td>
-          <td>{{ samp["name"] }}</td>
+          <td><a href="/remove?id_number={{ samp["_id"] }}&index={{ index_howto }}"">{{ samp["name"] }}</a></td>
           <td>{{ samp["size"] }}</td>
         </tr>
         {% else %}
