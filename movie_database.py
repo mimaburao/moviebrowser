@@ -13,6 +13,9 @@ import put_togarther_images
 import sys,random
 from bson.objectid import ObjectId
 
+#mylib
+import chace_data
+
 def media_file_suffix(suffix):
     """メディアファイル判定"""
     mediafile = ['.mp4','.avi','.mkv', '.ts']
@@ -77,17 +80,19 @@ def db_read_thumnail_all(data_all=[], search=None, index_howto='views', thumnail
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
     return data_all
 
-def remove_movie_database(id_number=''):
-    """_id情報よりデータベースを削除する"""
+def remove_movie_database(id_number='', thumnail_images={}):
+    """_id情報よりデータベースとサムネを削除する
+    """
     with MongoClient('mongodb://localhost:28001/') as client:
         db = client.testdb
         for data in db.movie_client.find({"_id": ObjectId(id_number)}):
             put_togarther_images.update_zip( '',data["thumnail_file"] )
+            del thumnail_images[data["thumnail_file"]]
         db.movie_client.delete_one( {"_id": ObjectId(id_number)})
     return True
     
 
-def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '/home/mima/work/moviebrowser/static/tmp/' ):
+def movie_database_update( media_dir='', thumnail_frames = 3, thumnail_images={}, image_path_dir = '/home/mima/work/moviebrowser/static/tmp/' ):
     """データベースより新しいメディアファイルがあればデータベース更新"""
     client = MongoClient('mongodb://localhost:28001/')
     p = Path(media_dir)
@@ -120,13 +125,14 @@ def movie_database_update( media_dir='', thumnail_frames = 3, image_path_dir = '
                                     thumnail_cut_file.unlink()
                                 db.movie_client.update({"filename": str(data)},{"$set": {"duration": duration_time}})
                                 put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
+                                chace_data.update_thumnail_images( thumnail_images, (data.name).replace(" ","") + '.jpg' )
                             else:
                                 continue
                         except:
                             print ("Error.")
     return True
 
-def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/'):
+def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',image_path_dir = '/home/mima/work/moviebrowser/static/', thumnail_images={}):
     """
     サムネイル再作成
     thumanil_type = 'InterVal' 等間隔作成
@@ -156,6 +162,7 @@ def rethumnail_make(filename, thumnail_frames = 3 ,thumnail_type = 'Random',imag
                     thumnail_cut_file.unlink()
                 db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": duration_time}})
                 put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
+                chace_data.update_thumnail_images( thumnail_images, (data.name).replace(" ","") + '.jpg' )
             else:
                 print("Error")
         except:

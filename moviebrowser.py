@@ -9,6 +9,8 @@ from wtforms.validators import Required
 from flask_bootstrap import Bootstrap
 import datetime,subprocess,re
 from io import BytesIO
+import joblib
+from pathlib import Path
 
 #mylibrary
 import put_togarther_images
@@ -50,7 +52,7 @@ def show_all(data_all=[]):
     
     data_all.clear()
     if( thumnail_images == {} ):
-        put_togarther_images.set_images_from_zip_all(thumnail_images)
+#        put_togarther_images.set_images_from_zip_all(thumnail_images)
         data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
     else:
         data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images)
@@ -77,7 +79,7 @@ def manager(data_all=[]):
     
     data_all.clear()
     if( thumnail_images == {} ):
-        put_togarther_images.set_images_from_zip_all(thumnail_images)
+#        put_togarther_images.set_images_from_zip_all(thumnail_images)
         data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images, search_id)
     else:
         data_all = movie_database.db_read_thumnail_all(data_all, search, index_howto, thumnail_images, search_id)
@@ -93,11 +95,11 @@ def thumnail_rewrite():
     global thumnail_images
     for data in movie_database.find_movie_database( str(request.args.get('id_number'))):
         try:
-            movie_database.rethumnail_make(data["filename"])
+            movie_database.rethumnail_make(data["filename"], thumnail_images)
         except:
             pass
     index_order = str(request.args.get("index"))
-    thumnail_images.clear()
+#    thumnail_image.clear()
     return redirect(url_for('manager',search_item=str(request.args.get('id_number'))))
 
 @app.route('/play', methods=['GET','POST'])
@@ -126,19 +128,23 @@ def update():
     global index_order
     global thumnail_images
     index_order = str(request.args.get("index"))
-    movie_database.movie_database_update( '/mnt/drive_d/download2' )
-    thumnail_images.clear()
+    movie_database.movie_database_update( '/mnt/drive_d/download2', 3,thumnail_images )
     return redirect(url_for('show_all'))
 
 @app.route('/remove')
 def remove():
     global index_order
     global thumnail_images
-    movie_database.remove_movie_database( str(request.args.get('id_number')) )
+    movie_database.remove_movie_database( str(request.args.get('id_number')),thumnail_images )
 #    index_order = str(request.args.get("index"))
-    thumnail_images.clear()
+#    thumnail_images.clear()
     return redirect(url_for('manager', index_sort=str(request.args.get("index"))))
 
 
 if __name__ == '__main__':
+    with Path("cache_thumnail.jb") as p:
+        if( p.is_file() ):
+            print("read thumnail")
+            thumnail_images = joblib.load(str(p))
     app.run()
+    joblib.dump(thumnail_images,"cache_thumnail.jb", compress=0)
