@@ -15,11 +15,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/movie?index={{ index_howto }}">一覧表示</a>
+        <a class="nav-item nav-link" href="/movie">一覧表示</a>
         <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="/update?index={{ index_howto }}">更新</a>
+        <a class="nav-item nav-link" href="/update">更新</a>
       </div>
     </div>
   </nav>
@@ -31,30 +31,30 @@
       <thread>
         <tr>
           <th>サムネイル</th>
-          <th><a class="btn" href="/movie?index_sort=views" role="button">views</a></th>
-          <th><a class="btn" href="/movie?index_sort=star" role="button">☆</a></th>          
-          <th><a class="btn" href="/movie?index_sort=date" role="button">日付</a></th>
+          <th><a class="btn" href="/manager?index_sort=views" role="button">views</a></th>
+          <th><a class="btn" href="/manager?index_sort=star" role="button">☆</a></th>          
+          <th><a class="btn" href="/manager?index_sort=date" role="button">日付</a></th>
           <th>時間</th>
-          <th><a class="btn" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
-          <th><a class="btn" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
+          <th><a class="btn" href="/manager?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a class="btn" href="/manager?index_sort=filename" role="button">ファイル名</a></th>
           <th>ファイルサイズ(MByte)</th>          
         </tr>
       </thread>
       <tbody>
         {% for samp in data_all %}
         <tr>
-            <td><a href="/rethumnail?id_number={{ samp["_id"] }}&index={{ index_howto }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td><a href="/rethumnail?id_number={{ samp["_id"] }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
             <td>{{ samp["views"] }}回視聴</td>
           <td>
-            <a href="/star?stars=0&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-info">★{{ samp["star"] }}</a>
-            <a href="/star?stars=1&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★</a>
-            <a href="/star?stars=2&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★★</a>
-            <a href="/star?stars=3&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★★★</a></td>
+            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
+            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-primary">★</a>
+            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-primary">★★</a>
+            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-primary">★★★</a></td>
           
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
           <td>{{ samp["access_time"] }}</td>
-          <td><a href="/remove?id_number={{ samp["_id"] }}&index={{ index_howto }}"">{{ samp["name"] }}</a></td>
+          <td><a href="/remove?id_number={{ samp["_id"] }}"">{{ samp["name"] }}</a></td>
           <td>{{ samp["size"] }}</td>
         </tr>
         {% else %}

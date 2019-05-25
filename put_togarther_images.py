@@ -54,9 +54,10 @@ def update_zip(image_filename='', del_thumnail=''):
                         zip_file.write( image_path_dir + "zip_tmp/" + str(file.name), arcname=str(file.name) )
                 if( image_filename == '' ):
                     return print("remove only")
-                zip_file.write( image_path_dir + image_filename, arcname=image_filename )
-                with Path(image_path_dir + image_filename) as rethumnail_image_file:
-                    rethumnail_image_file.unlink()
+                zip_file.write( image_path_dir + "tmp/" + image_filename, arcname=image_filename )
+                print("zip: " + image_path_dir + "tmp/" + image_filename)
+                #with Path(image_path_dir + "tmp/" + image_filename) as rethumnail_image_file:
+                #    rethumnail_image_file.unlink()
 
     except:
         print('Not archive')

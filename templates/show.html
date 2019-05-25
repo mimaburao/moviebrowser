@@ -43,13 +43,13 @@
       <tbody>
         {% for samp in data_all %}
         <tr>
-            <td><a href="/play?id_number={{ samp["_id"] }}&index={{ index_howto }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td><a href="/play?id_number={{ samp["_id"] }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
             <td>{{ samp["views"] }}回視聴</td>
           <td>
-            <a href="/star?stars=0&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-info">★{{ samp["star"] }}</a>
-            <a href="/star?stars=1&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★</a>
-            <a href="/star?stars=2&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★★</a>
-            <a href="/star?stars=3&id_number={{ samp["_id"] }}&index={{ index_howto }}" class="badge badge-primary">★★★</a></td>
+            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
+            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-primary">★</a>
+            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-primary">★★</a>
+            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-primary">★★★</a></td>
           
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
