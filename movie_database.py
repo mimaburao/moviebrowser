@@ -5,18 +5,16 @@
 #クラス化　2019-05-25
 
 from pathlib import Path
-import datetime
-import subprocess
-import struct
+import datetime,subprocess,struct
 from pymongo import MongoClient
 import pymongo
-import put_togarther_images
-import sys,random
+import sys,random,base64,joblib
 from bson.objectid import ObjectId
-import joblib
+from io import BytesIO
 
-#mylib
-import cache_data
+
+#my library
+import put_togarther_images
 
 class MovieDB:
     '''
@@ -141,6 +139,15 @@ class MovieDB:
         self.db.movie_client.delete_one( {"_id": ObjectId(id_number)})
         return True
 
+    def read_thumnail_image(self,thumnail_file=''):
+        '''
+        サムネ画像を読み込む
+        '''
+        file_data = BytesIO()
+        with open(thumnail_file,"br") as file:
+                file_data = base64.b64encode(file.read()).decode("utf-8")
+                return file_data
+
     def update(self):
         """データベースより新しいメディアファイルがあればデータベース更新"""
         p = Path(self.media_dir)
@@ -154,7 +161,7 @@ class MovieDB:
                             if( data.is_file() and self.media_file_suffix( data.suffix )):
                                 duration_time = self.__make_thumnail(str(data))
                                 put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
-                                self.thumnail_images["(data.name).replace(" ","") + '.jpg'"] = cache_data.update_thumnail_images( (data.name).replace(" ","") + '.jpg' )
+                                self.thumnail_images["(data.name).replace(" ","") + '.jpg'"] = self.read_thumnail_image( (data.name).replace(" ","") + '.jpg' )
                                 self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
                                 #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
                             else:
@@ -174,7 +181,7 @@ class MovieDB:
             duration_time = self.__make_thumnail(str(file_data), thumnail_type )
             self.db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": duration_time}})
             put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
-            self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = cache_data.update_thumnail_images(self.image_path_tmp_dir + '/' + (file_data.name).replace(" ","") + '.jpg')
+            self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = self.read_thumnail_image(self.image_path_tmp_dir + '/' + (file_data.name).replace(" ","") + '.jpg')
         return True
 
     def find(self,id_number=''):
