@@ -1,6 +1,6 @@
 # moviebrowser
 movie thumnail manager  
-動画のファイル管理を一元的に行う  
+動画のサムネイルを見て、再生できるようにするwebアプリ
 <img src ="https://img.shields.io/badge/python3.4+-green.svg">
 <img src ="https://img.shields.io/badge/flask-red.svg">
 <img src ="https://img.shields.io/badge/bootstrap2.0-green.svg">
@@ -14,20 +14,14 @@ movie thumnail manager
 # Dependency
 Flask  
 Bootstarp  
-python 3.4+  
+python 3.4+
+- pymongo,joblib  
 MongoDB(on Docker)  
 Linux Mint 19.1にて動作確認  
 
 # Setup
+pip3にてbootstrap,pymongo,joblibのインストール
 Dockerにてmongodを起動(port 28001)  
-初回のみmovie_database_make.pyを起動する。  
-    1.Pathオブジェクトにメディアがあるディレクトリを指定  
-    2.image_path_dirに作成したメディアのサムネイルを一時保管する場所を指定  
-    3.make_thumnail = Falseにてサムネイル作成の可否  
-    4.python3 movie_database_make.py  
-    5.image_path_dirにできたサムネイルをzip形式にて"thumnail.zip"として圧縮  
-    6.zipファイルをstatic/以下に置く  
-databaseの作成は検討予定なのと、Dockerを終了するとデータベースはなくなる。  
 
 # Usage
 python3 moviebrowser.pyと実行する。
@@ -39,10 +33,20 @@ webブラウザー上で"localhost:5000/movieにアクセスする。
 NavBarのプルダウン「更新」で、メディアファイルの更新作業  
 NavBarのプルダウン「管理」で、サムネイルをクリックするとランダムでサムネイルを作成  
 NavBarのプルダウン「管理」で、ファイル名をクリックするとデータを削除  
+NavBarのプルダウン「データベースの変更」で、新規データベースと既存のデータベースの切り替え  
+- 「動画場所選択」にて動画の場所を指定する
+    - 「上位階層に移動」で親ディレクトリ
+    - ディレクトリのクリックで、ディレクトリに行ける
+    - 「メディア場所決定」で表示のディレクトリにて検索を行うようにする
+- 「新規データベース名」に名前を付けて、「データベース作成」すると指定のディレクトリのデータベースを作成する
+- データベース名にて「選択有無」をクリックすると指定のデータベースに移行できる
 
-問題点  
-* 複数のメディア場所を探索できない
-* デザイン
+
+## 問題点  
+ 
+- デザイン
+- (ffmpegにて)再生できない動画はサムネが作成されない
+  
 
 
 # Licence
