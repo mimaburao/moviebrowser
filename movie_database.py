@@ -32,7 +32,7 @@ class MovieDB:
     search_id=''
     index_howto='views'
     image_path_tmp_dir = ''
-    make_thumnail = True
+    make_thumnail_flag = True
     thumnail_frames = 3
     media_dir = ''
     thumnail_images={}
@@ -48,7 +48,9 @@ class MovieDB:
         self.thumnail_frames = thumnail_frames
         self.media_dir = media_dir
         self.db = self.client[database_name]
-        with Path("cache_thumnail.jb") as p:  #サムネキャッシュの読み込み
+        print("Database_name:" + self.db.name)
+        print("media_dir:" + self.media_dir)
+        with Path(self.db.name + "_cache_thumnail.jb") as p:  #サムネキャッシュの読み込み
             if( p.is_file() ):
                 print("read thumnail")
                 self.thumnail_images = joblib.load(str(p))
@@ -89,7 +91,7 @@ class MovieDB:
             duration_time = float(0)
             try:
                 i = 0
-                if( self.make_thumnail and self.media_file_suffix( data.suffix ) ):
+                if( self.make_thumnail_flag and self.media_file_suffix( data.suffix ) ):
                     res = subprocess.check_output(args)
                     duration_time = float(res.decode('utf8')) #再生時間数
                     for i in range(1,self.thumnail_frames + 1):  #三コマのサムネイル切り出し
@@ -117,14 +119,17 @@ class MovieDB:
         p : メディアの場所
         """
         self.db.movie_client.remove()
+        self.thumnail_images.clear()
         duration_time = float(0)
         with Path(self.media_dir) as p:
+            print("making database:"+str(p))
             for data in list(p.glob("**/*")):
                 if( data.is_file() and self.media_file_suffix( data.suffix )):
-                    if(self.__make_thumnail):
-                        print("Don't make thumnail")
+                    if(self.make_thumnail_flag):
+                        duration_time = self.__make_thumnail( str(data) , 'Interval')
+                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = self.read_thumnail_image(self.image_path_tmp_dir + '/' +(data.name).replace(" ","") +'.jpg')
                     else:
-                        duration_time = self.__make_thumnail( str(data) , thumanil_type='Interval')
+                        print("Don't make thumnail")
                     self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
             for data in self.db.movie_client.find():
                 print (data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
@@ -144,9 +149,14 @@ class MovieDB:
         サムネ画像を読み込む
         '''
         file_data = BytesIO()
-        with open(thumnail_file,"br") as file:
-                file_data = base64.b64encode(file.read()).decode("utf-8")
+        try:
+            with Path(thumnail_file) as file:
+                file_data = base64.b64encode(file.read_bytes()).decode("utf-8")
                 return file_data
+        except:
+            print("not fount")
+            file_data=b''
+            return file_data
 
     def update(self):
         """データベースより新しいメディアファイルがあればデータベース更新"""
@@ -159,9 +169,9 @@ class MovieDB:
                         if( data.stat().st_ctime > cursor_data["date"] ):
                             duration_time = float(0)
                             if( data.is_file() and self.media_file_suffix( data.suffix )):
-                                duration_time = self.__make_thumnail(str(data))
-                                put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
-                                self.thumnail_images["(data.name).replace(" ","") + '.jpg'"] = self.read_thumnail_image( (data.name).replace(" ","") + '.jpg' )
+                                duration_time = self.__make_thumnail(str(data), 'Interval')
+                                #put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
+                                self.thumnail_images[(data.name).replace(" ","") + '.jpg'] = self.read_thumnail_image( self.image_path_tmp_dir + '/' + (data.name).replace(" ","") + '.jpg' )
                                 self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
                                 #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
                             else:
@@ -206,6 +216,22 @@ class MovieDB:
     def __del__(self):
         self.client.close()
 
+def get_database_info():
+    """
+    Mongoのデータベース情報取得
+    戻り値　{データベース名 : 動画の場所}
+    """
+    db_names= []
+    databases_info = []
+    with MongoClient('mongodb://localhost:28001/') as client:
+        db_names = client.list_database_names()
+        for db_name in list(db_names):
+            db = client[db_name]
+            for data in db.movie_client.find().limit(1):
+                with Path(data["filename"]) as file:
+                    db_media_dir = str(file.parents[0])
+                    databases_info.append({"name": db_name, "media_dir": db_media_dir})
+    return databases_info
 
 def main(argv):
     """

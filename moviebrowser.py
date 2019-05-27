@@ -37,6 +37,7 @@ def show_all(data_all=[]):
     global my_database
     my_database.index_howto = request.args.get('index_sort',default='views', type=str)
     my_database.search_id = ''
+    my_database.search = ''
 
     form = SearchForm()
     if form.validate_on_submit():
@@ -55,6 +56,8 @@ def show_all(data_all=[]):
 @app.route('/manager', methods=['GET','POST'])
 def manager(data_all=[]):
     global my_database
+    my_database.search_id = ''
+    my_database.search = ''
     my_database.search_id = request.args.get('search_item', default='', type=str)
     my_database.index_howto = request.args.get('index_sort',default='views', type=str)
    
@@ -84,6 +87,7 @@ def thumnail_rewrite():
         except:
             pass
     my_database.index_howto = str(request.args.get("index"))
+    joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
 #    thumnail_image.clear()
     return redirect(url_for('manager',search_item=str(request.args.get('id_number'))))
 
@@ -113,17 +117,76 @@ def update():
     global my_database
     my_database.index_howto = str(request.args.get("index"))
     my_database.update()
+    joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
     return redirect(url_for('show_all'))
 
 @app.route('/remove')
 def remove():
     global my_database
     my_database.remove( str(request.args.get('id_number')) )
-#    index_order = str(request.args.get("index"))
+    joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
+    #index_order = str(request.args.get("index"))
 #    thumnail_images.clear()
     return redirect(url_for('manager', index_sort=str(request.args.get("index"))))
 
+@app.route('/select_database', methods=['GET','POST'])
+def select_db():
+    global my_database
+    databases = []
+    media_select_dir = ''
+    if(request.method == 'GET'):  #選択した動画の場所
+        media_select_dir = str(request.args.get("media_dir"))
+    databases = movie_database.get_database_info()
+
+    if(request.method == 'POST'):
+        if(request.form["create_db"]):
+            database_new_name = request.form["database_name"]
+            if (database_new_name != ''):  #新規データベース
+                my_database.__init__(database_new_name, './static/tmp', 3, str(request.args.get("media_dir")))
+                my_database.make_database()
+        return redirect(url_for('show_all'))
+    
+    return render_template('select_database.html', databases = databases, media_select_dir= media_select_dir)
+
+@app.route('/choose_dir')
+def choose_dir():
+    file_infos = []
+    file_dir = ''
+    if(request.args.get("choice_dir") == ".."):  #上層に移動
+        with Path(request.args.get("file_dir")) as p:
+            file_dir = str(p.parent.resolve())
+            for file_info in list (p.parent.glob("*")):
+                if((Path(str(file_info))).is_dir()):
+                    file_infos.append(str(file_info))
+            return render_template('/choose_dir.html', file_infos=file_infos, file_dir=file_dir)
+    
+    if(request.args.get("choice_dir")):  #指定階層
+        with Path(str(request.args.get("choice_dir"))) as p:
+            file_dir = str(p.resolve())
+            print(file_dir)
+            for file_info in list(p.glob("*")):
+                if((Path(str(file_info))).is_dir()):
+                    file_infos.append(str(file_info))
+        return render_template('/choose_dir.html', file_infos=file_infos, file_dir=file_dir)
+
+    with Path.cwd() as p: #最初の階層
+        with Path(str(p.resolve())) as p_abs:
+            file_dir = str(p_abs)
+            for file_info in list(p_abs.glob("*")):
+                if(Path(str(file_info)).is_dir()):
+                    file_infos.append(str(file_info))
+            return render_template('/choose_dir.html', file_infos=file_infos,file_dir=file_dir)
+
+@app.route('/check_db')    
+def check_db():
+    global my_database
+
+    if ( request.args.get("database_name") ):  #従来のデータベース
+        my_database.__init__(str(request.args.get("database_name")), './static/tmp', 3, request.args.get("media_dir"))
+        return redirect(url_for('show_all'))
+    else:
+        return redirect(url_for('select_db'))
 
 if __name__ == '__main__':
     app.run()
-    joblib.dump(my_database.thumnail_images,"cache_thumnail.jb", compress=0)
+    joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)

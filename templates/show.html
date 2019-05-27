@@ -4,7 +4,7 @@
 
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
-    <a href="#" class="navbar-brand">MovieBrowser</a>
+    <a href="/movie" class="navbar-brand">MovieBrowser</a>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
         data-target="#navmenu1"
@@ -15,11 +15,11 @@
     </button>
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/select_database">データーベース変更</a>
         <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="/manager?index={{ index_howto }}">管理</a>
-        <a class="nav-item nav-link" href="/update?index={{ index_howto }}">更新</a>
+        <a class="nav-item nav-link" href="/manager">管理</a>
+        <a class="nav-item nav-link" href="/update">更新</a>
       </div>
     </div>
   </nav>
