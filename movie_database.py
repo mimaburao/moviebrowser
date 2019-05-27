@@ -69,7 +69,7 @@ class MovieDB:
         data_all : web表示用のデータ
         """
         if( self.search_id == ''):
-            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING)
+            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING).limit(1000)
         else:
             cursor = self.find(self.search_id)
         for data in cursor:
