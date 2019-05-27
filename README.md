@@ -10,7 +10,7 @@ movie thumnail manager
 
 
 2019-05-27  
-＜img src ="https://github.com/mimaburao/movibrowser/images/moviebrowser_sample01.mp4.gif">
+![sample](https://github.com/mimaburao/moviebrowser/images/moviebrowser_sample01.mp4.gif)
 
 # Dependency
 Flask 1.0+ 
