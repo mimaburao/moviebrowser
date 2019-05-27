@@ -16,7 +16,9 @@ Flask 1.0+
 Bootstarp 4  
 python 3.4+
 - pymongo,joblib  
-MongoDB 3.6+(on Docker)  
+MongoDB 3.6+(on Docker)
+ffmpeg
+(Imagemagic-6)  
 Linux Mint 19.1にて動作確認  
 
 # Setup
