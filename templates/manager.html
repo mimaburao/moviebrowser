@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Movie Database{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
+    <a href="/manager" class="navbar-brand">Manger (Total number of files:{{ sum_database_count }})</a>
+    <button class="navbar-toggler" type="button"
+        data-toggle="collapse"
+        data-target="#navmenu1"
+        aria-controls="navmenu1"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu1">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/movie">一覧表示</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="/update">更新</a>
+      </div>
+    </div>
+  </nav>
+
+  {{ wtf.quick_form(form) }}
+  <div class="alert alert-warning" role="alert">ファイル変更</div>  
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thread>
+        <tr>
+          <th>サムネイル</th>
+          <th><a class="btn" href="/manager?index_sort=views" role="button">views</a></th>
+          <th><a class="btn" href="/manager?index_sort=star" role="button">☆</a></th>          
+          <th><a class="btn" href="/manager?index_sort=date" role="button">日付</a></th>
+          <th><a class="btn" href="/manager?index_sort=duration" role="button">時間</a></th>
+          <th><a class="btn" href="/manager?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a class="btn" href="/manager?index_sort=filename" role="button">ファイル名</a></th>
+          <th>ファイルサイズ(MByte)</th>          
+        </tr>
+      </thread>
+      <tbody>
+        {% for samp in data_all %}
+        <tr>
+            <td><a href="/rethumnail?id_number={{ samp["_id"] }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td>{{ samp["views"] }}回視聴</td>
+          <td>
+            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
+            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-primary">★</a>
+            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-primary">★★</a>
+            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-primary">★★★</a></td>
+          
+          <td>{{ samp["date"] }}</td>
+          <td>{{ samp["duration"] }}</td>
+          <td>{{ samp["access_time"] }}</td>
+          <td><a href="/remove?id_number={{ samp["_id"] }}"">{{ samp["name"] }}</a></td>
+          <td>{{ samp["size"] }}</td>
+        </tr>
+        {% else %}
+          <td>no entry exist!</td>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

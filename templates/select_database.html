@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}Movie Database{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
+    <a href="/select_database" class="navbar-brand">DataBase Manger</a>
+    <button class="navbar-toggler" type="button"
+        data-toggle="collapse"
+        data-target="#navmenu1"
+        aria-controls="navmenu1"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu1">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/movie">一覧表示</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="/update">更新</a>
+      </div>
+    </div>
+  </nav>
+
+  <div>
+    <a class="btn btn-primary" href="/choose_dir" role="button">動画場所選択</a>
+    <p>{{media_select_dir}}</p>
+</div>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="text1">新規データベース名:</label>
+        <input type="text" id="text1" name="database_name" class="form-control">
+        <input type="submit" class="btn btn-primary" name="create_db" value="データベース作成">
+    </div>
+    
+</form>
+
+
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thread>
+        <tr>
+          <th>データベース名</th>
+          <th>選択有無</th>
+          <th>動画場所</th>          
+          
+        </tr>
+      </thread>
+      <tbody>
+        <tr>
+            {% for database in databases %}
+            <td>{{database["name"]}}</td>
+            <td><a class="btn btn-info" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}" role="button">●</a></td>
+          　<td>{{ database["media_dir"] }}</td>
+        </tr>
+        {% else %}
+          <td>no entry exist!</td>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

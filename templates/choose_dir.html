@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Movie Database{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
+    <a href="/select_database" class="navbar-brand">Choose medir dir</a>
+    <button class="navbar-toggler" type="button"
+        data-toggle="collapse"
+        data-target="#navmenu1"
+        aria-controls="navmenu1"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu1">
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/movie">一覧表示</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="#">#</a>
+        <a class="nav-item nav-link" href="/update">更新</a>
+      </div>
+    </div>
+  </nav>
+  <a class="btn btn-primary" href="/choose_dir?choice_dir=..&file_dir={{file_dir}}" role="button" >上位階層に移動</a>
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thread>
+        <tr>
+          <th>場所</th>          
+          
+        </tr>
+      </thread>
+      <tbody>
+        <tr>
+            {% for file_info in file_infos %}
+            <td><a class="btn btn-outline-dark" href="/choose_dir?choice_dir={{file_info}}" role="button">{{ file_info }}</a></td>
+        </tr>
+        {% else %}
+          <td>no entry exist!</td>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a class="btn btn-primary" href="/select_database?media_dir={{file_dir}}" role="button" >メディア場所決定</a>
+    <p>{{file_dir}}</p>
+  </div>
+</div>
+
+{% endblock %}
