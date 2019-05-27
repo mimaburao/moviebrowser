@@ -1,6 +1,6 @@
 # moviebrowser
 movie thumnail manager  
-動画のサムネイルを見て、再生できるようにするwebアプリ
+動画のサムネイルを見て、再生できるようにするwebアプリ  
 <img src ="https://img.shields.io/badge/python3.4+-green.svg">
 <img src ="https://img.shields.io/badge/flask-red.svg">
 <img src ="https://img.shields.io/badge/bootstrap2.0-green.svg">
@@ -9,14 +9,15 @@ movie thumnail manager
 <img src ="https://img.shields.io/badge/Linux_Mint-v.19.1-green.svg">
 
 
-2019-05-17
+2019-05-27  
+![sample](https://github.com/mimaburao/movibrowser/images/moviebrowser_sample01.mp4.gif)
 
 # Dependency
-Flask  
-Bootstarp  
+Flask 1.0+ 
+Bootstarp 4  
 python 3.4+
 - pymongo,joblib  
-MongoDB(on Docker)  
+MongoDB 3.6+(on Docker)  
 Linux Mint 19.1にて動作確認  
 
 # Setup

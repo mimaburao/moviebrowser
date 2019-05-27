@@ -95,7 +95,7 @@ def thumnail_rewrite():
 def play():
     global my_database
     for data in my_database.find( str(request.args.get('id_number'))):
-        args = ['mpv','--geometry=50%','--volume=80']
+        args = ['mpv','--geometry=70%','--volume=80']
         args.append(data["filename"])
         try:
             subprocess.check_output(args)
