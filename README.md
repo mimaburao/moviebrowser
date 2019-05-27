@@ -20,7 +20,7 @@ MongoDB(on Docker)
 Linux Mint 19.1にて動作確認  
 
 # Setup
-pip3にてbootstrap,pymongo,joblibのインストール
+pip3にてbootstrap,pymongo,joblibのインストール  
 Dockerにてmongodを起動(port 28001)  
 
 # Usage
@@ -47,6 +47,7 @@ NavBarのプルダウン「データベースの変更」で、新規データ�
 - デザイン
 - (ffmpegにて)再生できない動画はサムネが作成されない
 - 1000までしか動画のデータベースは一度に表示できない
+- 再起動時は最初に作ったデータベースを表示
   
 
 
