@@ -23,7 +23,8 @@ Linux Mint 19.1にて動作確認
 
 # Setup
 pip3にてbootstrap,pymongo,joblibのインストール  
-Dockerにてmongodを起動(port 28001)  
+Dockerにてmongodを起動(port 28001, static/dbにボリュームマウント)
+mongo.shに参考の起動方法 
 
 # Usage
 python3 moviebrowser.pyと実行する。
