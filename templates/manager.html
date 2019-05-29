@@ -26,24 +26,24 @@
 
   {{ wtf.quick_form(form) }}
   <div class="alert alert-warning" role="alert">ファイル変更</div>  
-<div class="table-responsive">
+<div class="table-responsive table_dark">
     <table class="table table-striped">
       <thread>
         <tr>
           <th>サムネイル</th>
-          <th><a class="btn" href="/manager?index_sort=views" role="button">views</a></th>
-          <th><a class="btn" href="/manager?index_sort=star" role="button">☆</a></th>          
-          <th><a class="btn" href="/manager?index_sort=date" role="button">日付</a></th>
-          <th><a class="btn" href="/manager?index_sort=duration" role="button">時間</a></th>
-          <th><a class="btn" href="/manager?index_sort=access_time" role="button">アクセス日付</a></th>
-          <th><a class="btn" href="/manager?index_sort=filename" role="button">ファイル名</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=views" role="button">views</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=star" role="button">☆</a></th>          
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=date" role="button">日付</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=duration" role="button">時間</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/manager?index_sort=filename" role="button">ファイル名</a></th>
           <th>ファイルサイズ(MByte)</th>          
         </tr>
       </thread>
       <tbody>
         {% for samp in data_all %}
         <tr>
-            <td><a href="/rethumnail?id_number={{ samp["_id"] }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
+            <td><a href="/rethumnail?id_number={{ samp["_id"] }}"" data-toggle="tooltip" data-placement="top" title="サムネを作り直しますか"> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
             <td>{{ samp["views"] }}回視聴</td>
           <td>
             <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
@@ -54,7 +54,7 @@
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
           <td>{{ samp["access_time"] }}</td>
-          <td><a href="/remove?id_number={{ samp["_id"] }}"">{{ samp["name"] }}</a></td>
+          <td><a href="/remove?id_number={{ samp["_id"] }}"" data-toggle="tooltip" data-placement="top" title="削除しますか">{{ samp["name"] }}</a></td>
           <td>{{ samp["size"] }}</td>
         </tr>
         {% else %}

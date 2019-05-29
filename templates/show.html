@@ -26,17 +26,17 @@
 
   {{ wtf.quick_form(form) }}
   
-<div class="table-responsive">
+<div class="table-responsive table-dark">
     <table class="table table-striped">
       <thread>
         <tr>
           <th>サムネイル</th>
-          <th><a class="btn" href="/movie?index_sort=views" role="button">views</a></th>
-          <th><a class="btn" href="/movie?index_sort=star" role="button">☆</a></th>          
-          <th><a class="btn" href="/movie?index_sort=date" role="button">日付</a></th>
-          <th><a class="btn" href="/movie?index_sort=duration" role="button">時間</a></th>
-          <th><a class="btn" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
-          <th><a class="btn" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=views" role="button">views</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=star" role="button">☆</a></th>          
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=date" role="button">日付</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=duration" role="button">時間</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
           <th>ファイルサイズ(MByte)</th>          
         </tr>
       </thread>
@@ -46,10 +46,10 @@
             <td><a href="/play?id_number={{ samp["_id"] }}""> <img src={{ samp["thumnail_file"] }} alt="test"> </a></td>
             <td>{{ samp["views"] }}回視聴</td>
           <td>
-            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-info">★{{ samp["star"] }}</a>
-            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-primary">★</a>
-            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-primary">★★</a>
-            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-primary">★★★</a></td>
+            <a href="/star?stars=0&id_number={{ samp["_id"] }}" class="badge badge-dark" data-toggle="tooltip" data-placement="top" title="星を無くしますか">★{{ samp["star"] }}</a>
+            <a href="/star?stars=1&id_number={{ samp["_id"] }}" class="badge badge-dark">★</a>
+            <a href="/star?stars=2&id_number={{ samp["_id"] }}" class="badge badge-dark">★★</a>
+            <a href="/star?stars=3&id_number={{ samp["_id"] }}" class="badge badge-dark">★★★</a></td>
           
           <td>{{ samp["date"] }}</td>
           <td>{{ samp["duration"] }}</td>
