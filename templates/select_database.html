@@ -40,11 +40,10 @@
 
 
 <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-dark table-striped">
       <thread>
         <tr>
           <th>データベース名</th>
-          <th>選択有無</th>
           <th>動画場所</th>          
           
         </tr>
@@ -52,8 +51,7 @@
       <tbody>
         <tr>
             {% for database in databases %}
-            <td>{{database["name"]}}</td>
-            <td><a class="btn btn-info" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}" role="button">●</a></td>
+            <td><a class="btn btn-dark" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}" role="button">{{database["name"]}}</a></td>
           　<td>{{ database["media_dir"] }}</td>
         </tr>
         {% else %}
