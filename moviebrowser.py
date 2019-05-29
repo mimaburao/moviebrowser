@@ -45,12 +45,13 @@ def show_all(data_all=[]):
 #        form.search.data = ''
     if(request.method == 'GET'): #検索窓の取得（何故かGETメソッド）
         my_database.search = request.args.get('search', default='', type=str)
+        skip = request.args.get('page', default='', type=str)  #データベースのスキップ
     data_all.clear()
     if( my_database.thumnail_images == {} ):
 #        put_togarther_images.set_images_from_zip_all(thumnail_images)
-        data_all = my_database.read_db_thumnail(data_all)
+        data_all = my_database.read_db_thumnail(data_all,skip)
     else:
-        data_all = my_database.read_db_thumnail(data_all)
+        data_all = my_database.read_db_thumnail(data_all,skip)
 
     return render_template('show.html', data_all=data_all)
 

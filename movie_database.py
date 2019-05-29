@@ -27,6 +27,7 @@ class MovieDB:
     thumnail_images : サムネ画像の保存（辞書形式）
     client : Mongoのアクセス用
     db : Mongoデータベースの名前
+    self.skip_number : データベースのスキップ数
     '''
     search = ''
     search_id=''
@@ -38,6 +39,7 @@ class MovieDB:
     thumnail_images={}
     client = MongoClient('mongodb://localhost:28001/')
     db = client['testdb']
+    skip_number = 0
     
     def __init__(self,database_name = 'testdb',image_path_tmp_dir = '/home/mima/work/moviebrowser/static/tmp',thumnail_frames = 3, media_dir = '/mnt/drive_d/download2'):
         '''
@@ -63,13 +65,21 @@ class MovieDB:
                 return True
         return False
 
-    def read_db_thumnail(self,data_all=[]):
+    def read_db_thumnail(self,data_all=[],skip=''):
         """
         データベースとサムネイルを読み込む
         data_all : web表示用のデータ
         """
+        if((skip == None) or (skip == '')):
+            self.skip_number = 0
+        elif(skip == 'pre'):
+            self.skip_number = self.skip_number - 1000
+            if(self.skip_number < 0):
+                self.skip_number = 0
+        elif(skip == 'next'):
+            self.skip_number = self.skip_number + 1000
         if( self.search_id == ''):
-            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING).limit(1000)
+            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING).skip(self.skip_number).limit(1000)
         else:
             cursor = self.find(self.search_id)
         for data in cursor:
