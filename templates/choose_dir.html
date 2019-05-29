@@ -36,14 +36,14 @@
       <tbody>
         <tr>
             {% for file_info in file_infos %}
-            <td><a class="btn btn-outline-dark" href="/choose_dir?choice_dir={{file_info}}" role="button">{{ file_info }}</a></td>
+            <td><a class="btn btn-dark" href="/choose_dir?choice_dir={{file_info}}" role="button">{{ file_info }}</a></td>
         </tr>
         {% else %}
           <td>no entry exist!</td>
         {% endfor %}
       </tbody>
     </table>
-    <a class="btn btn-primary" href="/select_database?media_dir={{file_dir}}" role="button" >メディア場所決定</a>
+    <a class="btn btn-dark" href="/select_database?media_dir={{file_dir}}" role="button" >メディア場所決定</a>
     <p>{{file_dir}}</p>
   </div>
 </div>

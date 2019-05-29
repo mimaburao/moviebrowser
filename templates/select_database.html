@@ -1,7 +1,5 @@
 {% extends "layout.html" %}
-
 {% block title %}Movie Database{% endblock %}
-
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/select_database" class="navbar-brand">DataBase Manger</a>
@@ -25,7 +23,7 @@
   </nav>
 
   <div>
-    <a class="btn btn-primary" href="/choose_dir" role="button">動画場所選択</a>
+    <a class="btn btn-dark" href="/choose_dir" role="button">動画場所選択</a>
     <p>{{media_select_dir}}</p>
 </div>
 
@@ -33,7 +31,7 @@
     <div class="form-group">
         <label for="text1">新規データベース名:</label>
         <input type="text" id="text1" name="database_name" class="form-control">
-        <input type="submit" class="btn btn-primary" name="create_db" value="データベース作成">
+        <input type="submit" class="btn btn-dark" name="create_db" value="データベース作成">
     </div>
     
 </form>

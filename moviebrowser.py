@@ -57,9 +57,14 @@ def show_all(data_all=[]):
 @app.route('/manager', methods=['GET','POST'])
 def manager(data_all=[]):
     global my_database
-    my_database.search_id = ''
-    my_database.search = ''
-    my_database.search_id = request.args.get('search_item', default='', type=str)
+    if(my_database.search_id):  #Noneの場合の対処
+        my_database.search_id = my_database.search_id
+    else:
+        my_database.search_id = ''
+    if(request.args.get('search_item')):  ##Noneの場合の対処
+        my_database.search = request.args.get('search_item', default='', type=str)
+    else:
+        my_database.search = ''
     my_database.index_howto = request.args.get('index_sort',default='views', type=str)
    
 #    form = SearchForm()
@@ -93,6 +98,19 @@ def thumnail_rewrite():
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
 #    thumnail_image.clear()
     return redirect(url_for('manager',search_item=str(request.args.get('id_number'))))
+
+@app.route('/remake_thumnail_all')
+def remake_thumnail_all():
+    global my_database
+    global my_database
+    for data in my_database.db.movie_client.find():
+        try:
+            my_database.rethumnail(data["filename"], 'Interval')
+        except:
+            pass
+    my_database.index_howto = str(request.args.get("index"))
+    joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
+    return redirect('/manager')
 
 @app.route('/play', methods=['GET','POST'])
 def play():
