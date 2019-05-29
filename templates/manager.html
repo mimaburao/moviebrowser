@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 {% block title %}Movie Database{% endblock %}
 
 {% block content %}
@@ -24,7 +23,6 @@
     </div>
   </nav>
 
-  {{ wtf.quick_form(form) }}
   <div class="alert alert-warning" role="alert">ファイル変更</div>  
 <div class="table-responsive table_dark">
     <table class="table table-striped">

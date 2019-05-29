@@ -39,11 +39,12 @@ def show_all(data_all=[]):
     my_database.search_id = ''
     my_database.search = ''
 
-    form = SearchForm()
-    if form.validate_on_submit():
-        my_database.search = form.search.data
-        form.search.data = ''
-    
+#    form = SearchForm()
+#    if form.validate_on_submit():
+#        my_database.search = form.search.data
+#        form.search.data = ''
+    if(request.method == 'GET'): #検索窓の取得（何故かGETメソッド）
+        my_database.search = request.args.get('search', default='', type=str)
     data_all.clear()
     if( my_database.thumnail_images == {} ):
 #        put_togarther_images.set_images_from_zip_all(thumnail_images)
@@ -51,7 +52,7 @@ def show_all(data_all=[]):
     else:
         data_all = my_database.read_db_thumnail(data_all)
 
-    return render_template('show.html', data_all=data_all,form=form,)
+    return render_template('show.html', data_all=data_all)
 
 @app.route('/manager', methods=['GET','POST'])
 def manager(data_all=[]):
@@ -61,11 +62,13 @@ def manager(data_all=[]):
     my_database.search_id = request.args.get('search_item', default='', type=str)
     my_database.index_howto = request.args.get('index_sort',default='views', type=str)
    
-    form = SearchForm()
-    if form.validate_on_submit():
-        my_database.search = form.search.data
-        form.search.data = ''
-    
+#    form = SearchForm()
+#    if form.validate_on_submit():
+#        my_database.search = form.search.data
+#        form.search.data = ''
+    if(request.method == 'GET'):  #検索窓の取得（何故かGETメソッド）
+        my_database.search = request.args.get('search', default='', type=str)
+
     data_all.clear()
     if( my_database.thumnail_images == {} ):
 #        put_togarther_images.set_images_from_zip_all(thumnail_images)
@@ -76,7 +79,7 @@ def manager(data_all=[]):
     sum_database_count = 0
     sum_database_count = my_database.database_sum_count()
     
-    return render_template('manager.html', data_all=data_all,form=form, sum_database_count=sum_database_count)
+    return render_template('manager.html', data_all=data_all, sum_database_count=sum_database_count)
 
 @app.route('/rethumnail', methods=['GET','POST'])
 def thumnail_rewrite():

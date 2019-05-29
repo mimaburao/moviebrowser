@@ -1,10 +1,13 @@
 {% extends "layout.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 {% block title %}Movie Database{% endblock %}
 
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/movie" class="navbar-brand">MovieBrowser</a>
+    <form class="form-inline my-2 my-lg-0">
+      <input type="search"  name = "search" class="form-control mr-sm-2" placeholder="検索..." aria-label="検索...">
+      <button type="submit" class="btn btn-outline-success my-2 my-sm-0">検索</button>
+    </form>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
         data-target="#navmenu1"
@@ -24,20 +27,18 @@
     </div>
   </nav>
 
-  {{ wtf.quick_form(form) }}
-  
-<div class="table-responsive table-dark">
-    <table class="table table-striped">
+<div class="table-responsive">
+    <table class="table table-dark table-striped">
       <thread>
         <tr>
-          <th>サムネイル</th>
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=views" role="button">views</a></th>
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=star" role="button">☆</a></th>          
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=date" role="button">日付</a></th>
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=duration" role="button">時間</a></th>
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
-          <th><a type="button" class="btn btn-outline-dark" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
-          <th>ファイルサイズ(MByte)</th>          
+          <th></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=views" role="button">views</a></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=star" role="button">☆</a></th>          
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=date" role="button">日付</a></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=duration" role="button">時間</a></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=access_time" role="button">アクセス日付</a></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=filename" role="button">ファイル名</a></th>
+          <th><a type="button" class="btn btn-dark" href="/movie?index_sort=size" role="button">ファイルサイズ(MByte)</a></th>          
         </tr>
       </thread>
       <tbody>
