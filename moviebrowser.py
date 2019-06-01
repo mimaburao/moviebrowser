@@ -11,16 +11,19 @@ import datetime,subprocess,re
 from io import BytesIO
 import joblib
 from pathlib import Path
+from flask_caching import Cache
 
 #mylibrary
 import put_togarther_images
 import movie_database
 
+cache = Cache(config={'CACHE_TYPE': 'simple'})
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret' # CSRF対策でtokenの生成に必要
 bootstrap = Bootstrap(app)
 my_database = movie_database.MovieDB('testdb','/home/mima/work/moviebrowser/static/tmp', 3, '/mnt/drive_d/download2')
-
+cache.init_app(app)
 class SearchForm(FlaskForm):
     """
     WTFフォームの準備クラス
@@ -92,7 +95,7 @@ def thumnail_rewrite():
     global my_database
     for data in my_database.find( str(request.args.get('id_number'))):
         try:
-            my_database.rethumnail(data["filename"])
+            my_database.rethumnail(data["filename"],'Random')
         except:
             pass
     my_database.index_howto = str(request.args.get("index"))
