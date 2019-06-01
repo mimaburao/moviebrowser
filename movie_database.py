@@ -11,7 +11,7 @@ import pymongo
 import sys,random,base64,joblib
 from bson.objectid import ObjectId
 from io import BytesIO
-
+import memory_tempfile
 
 #my library
 import put_togarther_images
@@ -56,7 +56,7 @@ class MovieDB:
             if( p.is_file() ):
                 print("read thumnail")
                 self.thumnail_images = joblib.load(str(p))
-    
+        
     def media_file_suffix(self,suffix):
         """メディアファイル判定"""
         mediafile = ['.mp4','.avi','.mkv', '.ts']
@@ -93,6 +93,49 @@ class MovieDB:
         return data_all
 
     def __make_thumnail(self, media_file='', thumanil_type='Random'):
+        """サムネイルの作成し、再生時間を取得
+        media_file :　動画ファイル
+        """
+        with Path(media_file) as data:
+            args = ['ffprobe', '-v', 'error', '-i', str(data), '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1']
+            duration_time = float(0)
+            tmp_thumnail = BytesIO()
+            try:
+                i = 0
+                if( self.make_thumnail_flag and self.media_file_suffix( data.suffix ) ):
+                    res = subprocess.check_output(args)
+                    duration_time = float(res.decode('utf8')) #再生時間数
+                    #thum=[]
+                    #for i in range(self.thumnail_frames):
+                    #    print("tmpfile use")
+                    #    thum.append(tempfile.NamedTemporaryFile(suffix = '.jpg',  dir=['/dev/shm'], delete=False ))
+                    #    thum[i].close()                          
+                    for i in range(1,self.thumnail_frames + 1):  #三コマのサムネイル切り出し
+                        print (i)
+                        if( thumanil_type == 'Random'):
+                            cut_time = random.randint(0,int(duration_time))
+                        else:
+                            cut_time = duration_time * i / (self.thumnail_frames + 1)
+                        cut_args = ['ffmpeg', '-ss', str(int(cut_time)),'-y','-t','1','-r','1','-i', str(data), '/dev/shm/' + str(data.name) + str(i) +'.jpg']
+                        subprocess.check_output(cut_args)
+                    thumnal_args = ['montage']
+                    for i in range(1,self.thumnail_frames + 1):
+                        thumnal_args.append('/dev/shm/' + str(data.name) + str(i) +'.jpg')
+                    thumnal_args.extend(['-tile', 'x1', '-geometry', '120x68', '-background','None','/dev/shm/' + (data.name).replace(" ","") + '.jpg']) #半角スペース対策済み
+                    subprocess.check_output(thumnal_args) #各動画サムネ作成
+                    with Path('/dev/shm/' + (data.name).replace(" ","") + '.jpg') as tmp_file:
+                        tmp_thumnail = tmp_file.read_bytes()
+                        tmp_file.unlink()
+                    for i in range(1, self.thumnail_frames + 1):
+                        with Path('/dev/shm/' + str(data.name) + str(i) + '.jpg') as tmp_file:
+                            tmp_file.unlink()
+                else:
+                    print ("Not thumnail file")
+            except:
+                print ("Error.")
+        return duration_time, tmp_thumnail
+
+    def __make_thumnail_org(self, media_file='', thumanil_type='Random'):
         """サムネイルの作成し、再生時間を取得
         media_file :　動画ファイル
         """
@@ -195,14 +238,15 @@ class MovieDB:
         thumanil_type = 'InterVal' 等間隔作成
                       = 'Random' ランダム作成
         """
+        thumnail_data = []
         file_data = Path(filename)
+        duration_time = float(0)
         with file_data:
-            duration_time = float(0)
-            duration_time = self.__make_thumnail(str(file_data), thumnail_type )
+            duration_time, thumnail_data = self.__make_thumnail(str(file_data), thumnail_type )
             self.db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": duration_time}})
             self.db.movie_client.update({"filename": str(file_data)}, {"$set": {"thumnail_file": (file_data.name).replace(" ","") + '.jpg'}})  #サムネをjpgで登録している場合の対策
-            put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
-            self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = self.read_thumnail_image(self.image_path_tmp_dir + '/' + (file_data.name).replace(" ","") + '.jpg')
+            #put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
+            self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = base64.b64encode(thumnail_data).decode("utf-8")
         return True
 
     def find(self,id_number=''):
