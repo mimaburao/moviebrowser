@@ -185,8 +185,8 @@ class MovieDB:
             for data in list(p.glob("**/*")):
                 if( data.is_file() and self.media_file_suffix( data.suffix )):
                     if(self.make_thumnail_flag):
-                        duration_time = self.__make_thumnail( str(data) , 'Interval')
-                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = self.read_thumnail_image(self.image_path_tmp_dir + '/' +(data.name).replace(" ","") +'.jpg')
+                        duration_time, tmp_thumnail = self.__make_thumnail( str(data) , 'Interval')
+                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = tmp_thunail
                     else:
                         print("Don't make thumnail")
                     self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
@@ -228,9 +228,9 @@ class MovieDB:
                         if( data.stat().st_ctime > cursor_data["date"] ):
                             duration_time = float(0)
                             if( data.is_file() and self.media_file_suffix( data.suffix )):
-                                duration_time = self.__make_thumnail(str(data), 'Interval')
+                                duration_time, tmp_thumnail = self.__make_thumnail(str(data), 'Interval')
                                 #put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
-                                self.thumnail_images[(data.name).replace(" ","") + '.jpg'] = self.read_thumnail_image( self.image_path_tmp_dir + '/' + (data.name).replace(" ","") + '.jpg' )
+                                self.thumnail_images[(data.name).replace(" ","") + '.jpg'] = tmp_thumnail
                                 self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
                                 #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
                             else:
