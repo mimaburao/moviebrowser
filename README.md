@@ -15,18 +15,18 @@ movie thumnail manager
 Flask 1.0+ 
 Bootstarp 4  
 python 3.4+
-- pymongo,joblib,memory_tempfile  
+- pymongo,joblib,memory-tempfile  
 MongoDB 3.6+(on Docker)
 ffmpeg
 (Imagemagic-6)  
 Linux Mint 19.1にて動作確認  
 
 # Setup
-pip3にてbootstrap,pymongo,joblib,memory_tempfileのインストール  
+pip3にてbootstrap,pymongo,joblib,memory-tempfileのインストール  
 Dockerにてmongodを起動(port 28001, static/dbにボリュームマウント)
 mongo.shに参考の起動方法  
 ※memory_tempfileは現在（2019-06-02）そのままでは動かない。[修正方法](https://qiita.com/mimaburao/items/26e1463feb6397197232) 
- 
+
 # Usage
 python3 moviebrowser.pyと実行する。
 webブラウザー上で"localhost:5000/movieにアクセスする。  
