@@ -22,7 +22,7 @@ cache = Cache(config={'CACHE_TYPE': 'simple'})
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret' # CSRF対策でtokenの生成に必要
 bootstrap = Bootstrap(app)
-my_database = movie_database.MovieDB('testdb','/home/mima/work/moviebrowser/static/tmp', 3, '/mnt/drive_d/download2')
+my_database = movie_database.MovieDB()
 cache.init_app(app)
 class SearchForm(FlaskForm):
     """
@@ -213,5 +213,14 @@ def check_db():
         return redirect(url_for('select_db'))
 
 if __name__ == '__main__':
+    config_list = ['','']
+    with Path("config.dat") as config_file:
+        if(config_file.is_file()):
+            config_list = joblib.load(str(config_file.name))
+            my_database.__init__( database_name = config_list[0], media_dir= config_list[1])
+    
     app.run()
+    config_list[0] = my_database.database_name
+    config_list[1] = my_database.media_dir
+    joblib.dump(config_list, "config.dat")
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)

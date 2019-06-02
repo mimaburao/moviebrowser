@@ -11,7 +11,7 @@ import pymongo
 import sys,random,base64,joblib
 from bson.objectid import ObjectId
 from io import BytesIO
-import tempfile
+import memory_tempfile
 
 #my library
 import put_togarther_images
@@ -41,7 +41,7 @@ class MovieDB:
     db = client['testdb']
     skip_number = 0
     
-    def __init__(self,database_name = 'testdb',image_path_tmp_dir = '/home/mima/work/moviebrowser/static/tmp',thumnail_frames = 3, media_dir = '/mnt/drive_d/download2'):
+    def __init__(self,database_name = 'testdb',image_path_tmp_dir = './static/tmp',thumnail_frames = 3, media_dir = '.'):
         '''
         image_path_tmp_dir : サムネの一時ファイル
         thumnail_frames :　サムネの数
@@ -50,6 +50,7 @@ class MovieDB:
         self.thumnail_frames = thumnail_frames
         self.media_dir = media_dir
         self.db = self.client[database_name]
+        self.database_name = database_name
         print("Database_name:" + self.db.name)
         print("media_dir:" + self.media_dir)
         with Path(self.db.name + "_cache_thumnail.jb") as p:  #サムネキャッシュの読み込み
@@ -92,7 +93,7 @@ class MovieDB:
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return data_all
 
-    def __make_thumnail(self, media_file='', thumanil_type='Random', ram_tmp='/tmp'):
+    def __make_thumnail(self, media_file='', thumanil_type='Random'):
         """サムネイルの作成し、再生時間を取得
         media_file :　動画ファイル
         ram_tmp : サムネイルの一時ファイル保管場所（ramdiskが望ましい）
@@ -109,7 +110,8 @@ class MovieDB:
                     thum=[]
                     for i in range(self.thumnail_frames):
                         print("tmpfile use")
-                        with tempfile.NamedTemporaryFile(suffix = '.jpg',  dir=ram_tmp, delete=False ) as tmp_thum:
+                        temp_ram= memory_tempfile.MemoryTempfile()
+                        with temp_ram.NamedTemporaryFile(suffix = '.jpg',  delete=False ) as tmp_thum:
                             thum.append(tmp_thum)                         
                     for i in range(1,self.thumnail_frames + 1):  #三コマのサムネイル切り出し
                         print (thum[i-1])
@@ -122,7 +124,8 @@ class MovieDB:
                     thumnal_args = ['montage']
                     for i in range(self.thumnail_frames):
                         thumnal_args.append(thum[i].name)
-                    with tempfile.NamedTemporaryFile(suffix = '.jpg', dir=ram_tmp, delete=False) as movie_thum:
+                    temp_ram= memory_tempfile.MemoryTempfile()
+                    with temp_ram.NamedTemporaryFile(suffix = '.jpg', delete=False) as movie_thum:
                         pass
                     thumnal_args.extend(['-tile', 'x1', '-geometry', '120x68', '-background','None', movie_thum.name ]) #半角スペース対策済み
                     subprocess.check_output(thumnal_args) #各動画サムネ作成
@@ -245,7 +248,7 @@ class MovieDB:
         file_data = Path(filename)
         duration_time = float(0)
         with file_data:
-            duration_time, thumnail_data = self.__make_thumnail(str(file_data), thumnail_type, ram_tmp='/dev/shm' )  #自分の場合ramdiskが/dev/shm
+            duration_time, thumnail_data = self.__make_thumnail(str(file_data), thumnail_type )
             self.db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": duration_time}})
             self.db.movie_client.update({"filename": str(file_data)}, {"$set": {"thumnail_file": (file_data.name).replace(" ","") + '.jpg'}})  #サムネをjpgで登録している場合の対策
             #put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
