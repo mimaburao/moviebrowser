@@ -12,6 +12,8 @@ from io import BytesIO
 import joblib
 from pathlib import Path
 from flask_caching import Cache
+from multiprocessing import Pool
+from collections import Counter
 
 #mylibrary
 import put_togarther_images
@@ -38,7 +40,9 @@ def hello_world():
 @app.route('/movie', methods=['GET','POST'])
 def show_all(data_all=[]):
     global my_database
-    my_database.index_howto = request.args.get('index_sort',default='views', type=str)
+    if (request.args.get( 'index_sort', type=str)):
+        my_database.index_howto = request.args.get('index_sort',default='views', type=str)
+    
     my_database.search_id = ''
     my_database.search = ''
 
@@ -106,12 +110,14 @@ def thumnail_rewrite():
 @app.route('/remake_thumnail_all')
 def remake_thumnail_all():
     global my_database
-    global my_database
+    data_files = []
     for data in my_database.db.movie_client.find():
         try:
-            my_database.rethumnail(data["filename"], 'Interval')
+            data_files.append(data["filename"])
+        #    my_database.rethumnail(data["filename"],'Interval')
         except:
             pass
+    my_database.rethumnail_multi(data_files,thumnail_type='Interval')
     my_database.index_howto = str(request.args.get("index"))
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
     return redirect('/manager')
@@ -213,14 +219,16 @@ def check_db():
         return redirect(url_for('select_db'))
 
 if __name__ == '__main__':
-    config_list = ['','']
+    config_list = ['','','']
     with Path("config.dat") as config_file:
         if(config_file.is_file()):
             config_list = joblib.load(str(config_file.name))
             my_database.__init__( database_name = config_list[0], media_dir= config_list[1])
+            my_database.index_howto = config_list[2]
     
     app.run()
     config_list[0] = my_database.database_name
     config_list[1] = my_database.media_dir
+    config_list[2] = my_database.index_howto
     joblib.dump(config_list, "config.dat")
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
