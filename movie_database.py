@@ -186,7 +186,7 @@ class MovieDB:
                 if( data.is_file() and self.media_file_suffix( data.suffix )):
                     if(self.make_thumnail_flag):
                         duration_time, tmp_thumnail = self.__make_thumnail( str(data) , 'Interval')
-                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = tmp_thunail
+                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = tmp_thumnail
                     else:
                         print("Don't make thumnail")
                     self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": duration_time, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
