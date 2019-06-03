@@ -4,6 +4,10 @@
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/manager" class="navbar-brand">Manger (Total number of files:{{ sum_database_count }})</a>
+    <form class="form-inline my-2 my-lg-0">
+      <input type="search"  name = "search" class="form-control mr-sm-2" placeholder="検索..." aria-label="検索...">
+      <button type="submit" class="btn btn-outline-success my-2 my-sm-0">検索</button>
+    </form>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
         data-target="#navmenu1"
@@ -59,6 +63,8 @@
         {% endfor %}
       </tbody>
     </table>
+    <a type="button" class="btn btn-dark btn-block" href="/movie?page=pre" role="button">前</a>
+    <a type="button" class="btn btn-dark btn-block" href="/movie?page=next" role="button">次</a>
   </div>
 </div>
 

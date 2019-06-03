@@ -75,19 +75,16 @@ def manager(data_all=[]):
         my_database.search = ''
     my_database.index_howto = request.args.get('index_sort',default='views', type=str)
    
-#    form = SearchForm()
-#    if form.validate_on_submit():
-#        my_database.search = form.search.data
-#        form.search.data = ''
+
     if(request.method == 'GET'):  #検索窓の取得（何故かGETメソッド）
         my_database.search = request.args.get('search', default='', type=str)
+        skip = request.args.get('page', default='', type=str)  #データベースのスキップ
 
     data_all.clear()
     if( my_database.thumnail_images == {} ):
-#        put_togarther_images.set_images_from_zip_all(thumnail_images)
-        data_all = my_database.read_db_thumnail(data_all)
+        data_all = my_database.read_db_thumnail(data_all, skip)
     else:
-        data_all = my_database.read_db_thumnail(data_all)
+        data_all = my_database.read_db_thumnail(data_all, skip)
     
     sum_database_count = 0
     sum_database_count = my_database.database_sum_count()
