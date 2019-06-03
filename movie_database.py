@@ -146,8 +146,8 @@ class MovieDB:
         except:
             thumnail_image_data = b''
 
-        thumnail_duration_image = {"duration": duration_time,"thumnail_image": thumnail_image_data}
-        return thumnail_duration_image
+        data_duration_and_image = {"duration": duration_time,"thumnail_image": thumnail_image_data}
+        return data_duration_and_image
 
     def __make_thumnail_org(self, media_file='', thumanil_type='Random'):
         """サムネイルの作成し、再生時間を取得
@@ -182,21 +182,22 @@ class MovieDB:
 
     def make_database(self):
         """
-        初めてのデータベース作成
+        初めてのデータベース作成（マルチプロセッサ用）
         p : メディアの場所
         """
         self.db.movie_client.remove()
         self.thumnail_images.clear()
+        filenames = []
         with Path(self.media_dir) as p:
             print("making database:"+str(p))
             for data in list(p.glob("**/*")):
                 if( data.is_file() and self.media_file_suffix( data.suffix )):
                     if(self.make_thumnail_flag):
-                        thum_data = self.__make_thumnail( str(data) , 'Interval')
-                        self.thumnail_images[(data.name).replace(" ","") +'.jpg'] = base64.b64encode(thum_data["thumnail_image"]).decode("utf-8")
+                        filenames.append(str(data))
                     else:
                         print("Don't make thumnail")
-                    self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": thum_data["duration"], "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
+                    self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": 0, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
+            self.rethumnail_multi(filenames, 'Interval')
             for data in self.db.movie_client.find():
                 print (data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
         return True
@@ -225,22 +226,20 @@ class MovieDB:
             return file_data
 
     def update(self):
-        """データベースより新しいメディアファイルがあればデータベース更新"""
-        p = Path(self.media_dir)
-        with p:
+        """データベースより新しいメディアファイルがあればデータベース更新（マルチプロセッサ用）"""
+        filenames = []
+        with Path(self.media_dir) as p:
             cursor = self.db.movie_client.find().sort("date", pymongo.DESCENDING).limit(1)
             for cursor_data in cursor:
                 for data in list(p.glob("**/*")):
                     if( self.media_file_suffix( data.suffix ) ):
                         if( data.stat().st_ctime > cursor_data["date"] ):
                             if( data.is_file() and self.media_file_suffix( data.suffix )):
-                                thum_data = self.__make_thumnail(str(data), 'Interval')
-                                #put_togarther_images.add_zip( (data.name).replace(" ","") + '.jpg' )
-                                self.thumnail_images[(data.name).replace(" ","") + '.jpg'] = thum_data["thumnail_image"]
-                                self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": thum_data["duration"], "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
-                                #            put_togarther_images.put_togarther_images((data.name).replace(" ","") + '.jpg')
+                               self.db.movie_client.insert_one({"name": str(data.name),"filename": str(data), "views": 0, "star": 0, "thumnail_file": (data.name).replace(" ","") +'.jpg', "date": data.stat().st_ctime, "duration": 0, "access_time": data.stat().st_atime, "size": data.stat().st_size}) #半角スペース対策済み
+                               filenames.append(str(data))  #更新するファイル名
                             else:
                                 print(data.name)
+        self.rethumnail_multi(filenames,'Interval')  #再生時間とサムネ画像を生成して、データベース登録                    
         return True
 
     def rethumnail(self,filename='', thumnail_type = 'Random'):
@@ -278,12 +277,6 @@ class MovieDB:
                 self.db.movie_client.update({"filename": str(file_data)}, {"$set": {"thumnail_file": (file_data.name).replace(" ","") + '.jpg'}})  #サムネをjpgで登録している場合の対策
                 self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = (data[filename])["thumnail_image"]
             
-        #with file_data:
-        #    thum_data = self.__make_thumnail(str(file_data), thumnail_type )
-        #    self.db.movie_client.update({"filename": str(file_data)},{"$set": {"duration": thum_data["duration"]}})
-        #    self.db.movie_client.update({"filename": str(file_data)}, {"$set": {"thumnail_file": (file_data.name).replace(" ","") + '.jpg'}})  #サムネをjpgで登録している場合の対策
-            #put_togarther_images.update_zip((file_data.name).replace(" ","") + '.jpg')
-        #    self.thumnail_images[(file_data.name).replace(" ","") + '.jpg'] = base64.b64encode(thum_data["thumnail_image"]).decode("utf-8")
         return True
 
     def find(self,id_number=''):
