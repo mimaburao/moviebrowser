@@ -4,6 +4,20 @@
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/movie" class="navbar-brand">MovieBrowser</a>
+    <div class="dropdown">
+      <button type="button" id="dropdown1"
+          class="btn btn-secondary dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">
+        データベース
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdown1">
+          {% for database in databases %}
+          <a class="dropdown-item" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}">{{database["name"]}}</a>
+          {% endfor %}
+      </div>
+    </div>
     <form class="form-inline my-2 my-lg-0">
       <input type="search"  name = "search" class="form-control mr-sm-2" placeholder="検索..." aria-label="検索...">
       <button type="submit" class="btn btn-outline-success my-2 my-sm-0">検索</button>

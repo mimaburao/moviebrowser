@@ -40,6 +40,7 @@ def hello_world():
 @app.route('/movie', methods=['GET','POST'])
 def show_all(data_all=[]):
     global my_database
+    databases = []
     if (request.args.get( 'index_sort', type=str)):
         my_database.index_howto = request.args.get('index_sort',default='views', type=str)
     
@@ -59,8 +60,9 @@ def show_all(data_all=[]):
         data_all = my_database.read_db_thumnail(data_all,skip)
     else:
         data_all = my_database.read_db_thumnail(data_all,skip)
+    databases = movie_database.get_database_info()
 
-    return render_template('show.html', data_all=data_all)
+    return render_template('show.html', data_all=data_all, databases = databases)
 
 @app.route('/manager', methods=['GET','POST'])
 def manager(data_all=[]):
