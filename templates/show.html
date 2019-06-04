@@ -2,15 +2,29 @@
 {% block title %}Movie Database{% endblock %}
 
 {% block content %}
+<style>
+   .dropdown-menu {
+     background-color: rgb(31, 36, 39)!important;
+    }
+
+    .dropdown-menu a{
+     color: rgb(128, 127, 127)!important;
+    }
+
+    .dropdown-menu a:hover{
+      color: rgb(240, 240, 240)!important;
+      background-color:   rgb(31, 36, 39)!important;
+    }
+  </style>
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/movie" class="navbar-brand">MovieBrowser</a>
     <div class="dropdown">
       <button type="button" id="dropdown1"
-          class="btn btn-secondary dropdown-toggle"
+          class="btn btn-dark dropdown-toggle"
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false">
-        データベース
+        データベース:{{database_name_now}}
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdown1">
           {% for database in databases %}

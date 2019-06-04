@@ -62,7 +62,7 @@ def show_all(data_all=[]):
         data_all = my_database.read_db_thumnail(data_all,skip)
     databases = movie_database.get_database_info()
 
-    return render_template('show.html', data_all=data_all, databases = databases)
+    return render_template('show.html', data_all=data_all, databases = databases, database_name_now=my_database.database_name)
 
 @app.route('/manager', methods=['GET','POST'])
 def manager(data_all=[]):
