@@ -76,13 +76,13 @@ class MovieDB:
         if((skip == None) or (skip == '')):
             self.skip_number = 0
         elif(skip == 'pre'):
-            self.skip_number = self.skip_number - 1000
+            self.skip_number = self.skip_number - 300
             if(self.skip_number < 0):
                 self.skip_number = 0
         elif(skip == 'next'):
-            self.skip_number = self.skip_number + 1000
+            self.skip_number = self.skip_number + 300
         if( self.search_id == ''):
-            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING).skip(self.skip_number).limit(1000)
+            cursor = self.db.movie_client.find({"filename": { '$regex': '.*' + self.search + '.*'}}).sort(self.index_howto, pymongo.DESCENDING).skip(self.skip_number).limit(300)
         else:
             cursor = self.find(self.search_id)
         for data in cursor:
