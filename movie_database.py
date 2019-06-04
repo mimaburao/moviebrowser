@@ -5,7 +5,7 @@
 #クラス化　2019-05-25
 
 from pathlib import Path
-import datetime,subprocess,struct
+import datetime,time,subprocess,struct
 from pymongo import MongoClient
 import pymongo
 import sys,random,base64,joblib
@@ -294,6 +294,17 @@ class MovieDB:
         self.db.movie_client.update({"_id" : ObjectId(id_number)}, {'$inc': {'views': 1}})
         return True
     
+    def timestamp_access(self,filenames=[]):
+        """
+        ファイルのアクセス履歴をデータベースに記録する
+        filenames : 大量のアクセスに考慮してリスト形式
+        """
+        for filename in filenames:
+            with Path(filename) as data:
+                self.db.movie_client.update({"filename": str(data)}, {"$set": {"access_time": int(time.time())}})
+                print(str(data))
+        return True
+            
     def database_sum_count(self):
         """データベースの件数を数える"""
         return self.db.movie_client.find().count()    

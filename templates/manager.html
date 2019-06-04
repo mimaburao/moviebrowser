@@ -1,12 +1,40 @@
 {% extends "layout.html" %}
 {% block title %}Movie Database{% endblock %}
+<style>
+  .dropdown-menu {
+    background-color: rgb(31, 36, 39)!important;
+   }
+
+   .dropdown-menu a{
+    color: rgb(128, 127, 127)!important;
+   }
+
+   .dropdown-menu a:hover{
+     color: rgb(240, 240, 240)!important;
+     background-color:   rgb(31, 36, 39)!important;
+   }
+ </style>
 
 {% block content %}
 <nav class="navbar navbar-fixed-top sticky-top navbar-dark bg-dark">
     <a href="/manager" class="navbar-brand">Manger (Total number of files:{{ sum_database_count }})</a>
+    <div class="dropdown">
+      <button type="button" id="dropdown1"
+          class="btn btn-dark dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">
+        データベース:{{database_name_now}}
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdown1">
+          {% for database in databases %}
+          <a class="dropdown-item" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}">{{database["name"]}}</a>
+          {% endfor %}
+      </div>
+    </div>
     <form class="form-inline my-2 my-lg-0">
       <input type="search"  name = "search" class="form-control mr-sm-2" placeholder="検索..." aria-label="検索...">
-      <button type="submit" class="btn btn-outline-success my-2 my-sm-0">検索</button>
+      <button type="submit" class="btn btn-outline-Faded my-2 my-sm-0">検索</button>
     </form>
     <button class="navbar-toggler" type="button"
         data-toggle="collapse"
@@ -19,9 +47,6 @@
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/movie">一覧表示</a>
-        <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="/update">更新</a>
       </div>
     </div>

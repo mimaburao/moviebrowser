@@ -11,7 +11,6 @@ import datetime,subprocess,re
 from io import BytesIO
 import joblib
 from pathlib import Path
-from flask_caching import Cache
 from multiprocessing import Pool
 from collections import Counter
 
@@ -19,13 +18,12 @@ from collections import Counter
 import put_togarther_images
 import movie_database
 
-cache = Cache(config={'CACHE_TYPE': 'simple'})
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super secret' # CSRF対策でtokenの生成に必要
 bootstrap = Bootstrap(app)
 my_database = movie_database.MovieDB()
-cache.init_app(app)
+
 class SearchForm(FlaskForm):
     """
     WTFフォームの準備クラス
@@ -42,21 +40,16 @@ def show_all(data_all=[]):
     global my_database
     databases = []
     if (request.args.get( 'index_sort', type=str)):
-        my_database.index_howto = request.args.get('index_sort',default='views', type=str)
+        my_database.index_howto = request.args.get('index_sort',default='access_time', type=str)
     
     my_database.search_id = ''
     my_database.search = ''
 
-#    form = SearchForm()
-#    if form.validate_on_submit():
-#        my_database.search = form.search.data
-#        form.search.data = ''
     if(request.method == 'GET'): #検索窓の取得（何故かGETメソッド）
         my_database.search = request.args.get('search', default='', type=str)
         skip = request.args.get('page', default='', type=str)  #データベースのスキップ
     data_all.clear()
     if( my_database.thumnail_images == {} ):
-#        put_togarther_images.set_images_from_zip_all(thumnail_images)
         data_all = my_database.read_db_thumnail(data_all,skip)
     else:
         data_all = my_database.read_db_thumnail(data_all,skip)
@@ -91,19 +84,22 @@ def manager(data_all=[]):
     sum_database_count = 0
     sum_database_count = my_database.database_sum_count()
     
-    return render_template('manager.html', data_all=data_all, sum_database_count=sum_database_count)
+    
+    return render_template('manager.html', data_all=data_all, database_name_now=my_database.database_name, sum_database_count=sum_database_count)
 
 @app.route('/rethumnail', methods=['GET','POST'])
 def thumnail_rewrite():
     global my_database
+    filename = []
     for data in my_database.find( str(request.args.get('id_number'))):
         try:
             my_database.rethumnail(data["filename"],'Random')
+            filename.appedn(data["filename"])
+            my_database.timestamp_access(filename)
         except:
             pass
     my_database.index_howto = str(request.args.get("index"))
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
-#    thumnail_image.clear()
     return redirect(url_for('manager',search_item=str(request.args.get('id_number'))))
 
 @app.route('/remake_thumnail_all')
@@ -113,10 +109,10 @@ def remake_thumnail_all():
     for data in my_database.db.movie_client.find():
         try:
             data_files.append(data["filename"])
-        #    my_database.rethumnail(data["filename"],'Interval')
         except:
             pass
     my_database.rethumnail_multi(data_files,thumnail_type='Interval')
+    my_database.timestamp_access(data_files)
     my_database.index_howto = str(request.args.get("index"))
     joblib.dump(my_database.thumnail_images,my_database.db.name + "_cache_thumnail.jb", compress=0)
     return redirect('/manager')
@@ -124,14 +120,17 @@ def remake_thumnail_all():
 @app.route('/play', methods=['GET','POST'])
 def play():
     global my_database
+    filename = []
     for data in my_database.find( str(request.args.get('id_number'))):
         args = ['mpv','--geometry=70%','--volume=80']
         args.append(data["filename"])
         try:
             subprocess.check_output(args)
+            filename.append(data["filename"]) 
         except:
             pass
     my_database.countup_views(str(request.args.get('id_number')))
+    my_database.timestamp_access(filename)
     my_database.index_howto = str(request.args.get("index"))
     return redirect(url_for('show_all'))
 
