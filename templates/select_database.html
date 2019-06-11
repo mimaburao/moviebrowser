@@ -14,28 +14,10 @@
     <div class="collapse navbar-collapse" id="navmenu1">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/movie">一覧表示</a>
-        <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="#">#</a>
-        <a class="nav-item nav-link" href="#">#</a>
         <a class="nav-item nav-link" href="/update">更新</a>
       </div>
     </div>
   </nav>
-
-  <div>
-    <a class="btn btn-dark" href="/choose_dir" role="button">動画場所選択</a>
-    <p>{{media_select_dir}}</p>
-</div>
-
-<form method="POST">
-    <div class="form-group">
-        <label for="text1">新規データベース名:</label>
-        <input type="text" id="text1" name="database_name" class="form-control">
-        <input type="submit" class="btn btn-dark" name="create_db" value="データベース作成">
-    </div>
-    
-</form>
-
 
 <div class="table-responsive">
     <table class="table table-dark table-striped">
@@ -55,6 +37,23 @@
         {% else %}
           <td>no entry exist!</td>
         {% endfor %}
+        <tr>
+          <td><form method="POST">
+            <div class="form-group">
+                <label for="text1">新規データベース名:</label>
+                <input type="text" id="text1" name="database_name" class="form-control">
+                <input type="submit" class="btn btn-outline-success" name="create_db" value="データベース作成">
+            </div>
+            
+        </form></td>
+        　<td><a class="btn btn-dark" href="/choose_dir" role="button">動画場所選択</a>
+          <p>{{media_select_dir}}</p>
+        {% if directory == 1 %}
+        <div class="alert alert-warning" role="alert">
+          <h4 class="alert-heading">動画のディレクトリを指定して下さい</h4>
+        {% endif %}
+        </div></td>
+      </tr>
       </tbody>
     </table>
   </div>

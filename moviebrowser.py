@@ -41,6 +41,8 @@ def show_all(data_all=[]):
     databases = []
     if (request.args.get( 'index_sort', type=str)):
         my_database.index_howto = request.args.get('index_sort',default='access_time', type=str)
+    else:
+        my_database.index_howto = 'access_time'
     
     my_database.search_id = ''
     my_database.search = ''
@@ -122,7 +124,7 @@ def play():
     global my_database
     filename = []
     for data in my_database.find( str(request.args.get('id_number'))):
-        args = ['mpv','--geometry=70%','--volume=80']
+        args = ['mpv','--geometry=70%']
         args.append(data["filename"])
         try:
             subprocess.check_output(args)
@@ -131,7 +133,6 @@ def play():
             pass
     my_database.countup_views(str(request.args.get('id_number')))
     my_database.timestamp_access(filename)
-    my_database.index_howto = str(request.args.get("index"))
     return redirect(url_for('show_all'))
 
 @app.route('/star', methods=['GET'])
@@ -221,6 +222,7 @@ if __name__ == '__main__':
     with Path("config.dat") as config_file:
         if(config_file.is_file()):
             config_list = joblib.load(str(config_file.name))
+            print(config_list)
             my_database.__init__( database_name = config_list[0], media_dir= config_list[1])
             my_database.index_howto = config_list[2]
     
