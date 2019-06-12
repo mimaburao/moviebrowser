@@ -16,11 +16,11 @@ Flask 1.0+
 Bootstarp 4(flask-bootstrap)  
 python 3.4+
 - pymongo,joblib,memory-tempfile  
-MongoDB 3.6+(on Docker)
-ffmpeg
-Imagemagick-6+
-mpv
-
+  
+MongoDB 3.6+(on Docker)  
+ffmpeg  
+Imagemagick-6+  
+mpv  
 Linux Mint 19.1にて動作確認  
 
 # Setup
@@ -55,7 +55,7 @@ NavBarのプルダウン「データベースの変更」で、新規データ�
 - (ffmpegにて)再生できない動画はサムネが作成されない
 - 動画再生がmpvになる
 
-#注意点
+# 注意点
 - インストール時にうまく行かない場合はpipが古い場合がある。
  - pip3 install --upgrade pip setuptools
  - とする。または、--userがないと注意されることもある。
