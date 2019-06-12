@@ -208,6 +208,16 @@ def check_db():
     else:
         return redirect(url_for('select_db'))
 
+@app.route('/carousel')
+def carousel():
+    global my_database
+    data_all=[]
+    
+    data_all = my_database.choice_moviefile('Random')
+    databases = movie_database.get_database_info()
+
+    return render_template('carousel.html', data_all=data_all,databases = databases ,database_name_now=my_database.database_name)
+
 if __name__ == '__main__':
     config_list = ['','','']
     with Path("config.dat") as config_file:

@@ -307,7 +307,27 @@ class MovieDB:
             
     def database_sum_count(self):
         """データベースの件数を数える"""
-        return self.db.movie_client.find().count()    
+        return self.db.movie_client.find().count()
+
+    def choice_moviefile(self, choice_menu='Random'):
+        """
+        データベースのおすすめ的な抜き出し
+        choice_menu="Random"  適当に抜き出す
+        """
+        keys = []
+        key_list=[]
+        for i in self.thumnail_images:
+            keys.append(i)
+        random.shuffle(keys)
+        for i in range(7): #7個くらい取り出す。
+            key_list.append(keys[i])
+        if(choice_menu == 'Random'):
+            for i in key_list:
+                cursor = self.db.movie_client.find({"thumnail_file": i})
+                for data in cursor:
+                    self.search_id = data["_id"]
+                    choice_data = self.read_db_thumnail()
+        return choice_data    
 
     def __del__(self):
         self.client.close()
