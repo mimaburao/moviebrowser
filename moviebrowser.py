@@ -3,9 +3,6 @@
 #巳摩
 from flask import Flask
 from flask import render_template,redirect,url_for,request
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import Required
 from flask_bootstrap import Bootstrap
 import datetime,subprocess,re
 from io import BytesIO
@@ -24,12 +21,6 @@ app.config['SECRET_KEY'] = 'super secret' # CSRF対策でtokenの生成に必要
 bootstrap = Bootstrap(app)
 my_database = movie_database.MovieDB()
 
-class SearchForm(FlaskForm):
-    """
-    WTFフォームの準備クラス
-    """
-    search = StringField('検索ファイル名', validators=[Required()])
-    submit = SubmitField('検索')
 
 @app.route('/', methods=['GET'])
 def hello_world():
