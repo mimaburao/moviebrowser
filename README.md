@@ -3,7 +3,7 @@ movie thumnail manager
 動画のサムネイルを見て、再生できるようにするwebアプリ  
 <img src ="https://img.shields.io/badge/python3.4+-green.svg">
 <img src ="https://img.shields.io/badge/flask-red.svg">
-<img src ="https://img.shields.io/badge/bootstrap2.0-green.svg">
+<img src ="https://img.shields.io/badge/bootstrap4.0-green.svg">
 <img src ="https://img.shields.io/badge/MongoDB-green.svg">
 <img src ="https://img.shields.io/badge/Docker-green.svg">
 <img src ="https://img.shields.io/badge/Linux_Mint-v.19.1-green.svg">
@@ -13,16 +13,19 @@ movie thumnail manager
 ![sample](images/moviebrowser_sample01.mp4.gif)
 # Dependency
 Flask 1.0+ 
-Bootstarp 4  
+Bootstarp 4(flask-bootstrap)  
 python 3.4+
 - pymongo,joblib,memory-tempfile  
 MongoDB 3.6+(on Docker)
 ffmpeg
-(Imagemagic-6)  
+Imagemagick-6+
+mpv
+
 Linux Mint 19.1にて動作確認  
 
 # Setup
-pip3にてbootstrap,pymongo,joblib,memory-tempfileのインストール  
+ソフトウェアの管理にて、ffmepg,ImageMagick,mpvをインストール
+pip3にてflask-bootstrap,pymongo,joblib,memory-tempfileのインストール(うまく行かない場合は後述の注意点を参照)
 Dockerにてmongodを起動(port 28001, static/dbにボリュームマウント)
 mongo.shに参考の起動方法  
 ※memory_tempfileは現在（2019-06-02）そのままでは動かない。[修正方法](https://qiita.com/mimaburao/items/26e1463feb6397197232) 
@@ -50,11 +53,15 @@ NavBarのプルダウン「データベースの変更」で、新規データ�
  
 - デザイン
 - (ffmpegにて)再生できない動画はサムネが作成されない
-- 1000までしか動画のデータベースは一度に表示できない
-- 再起動時は最初に作ったデータベースを表示
-  
+- 動画再生がmpvになる
 
-
+#注意点
+- インストール時にうまく行かない場合はpipが古い場合がある。
+ - pip3 install --upgrade pip setuptools
+ - とする。または、--userがないと注意されることもある。
+ - pip3 install --user インストールするモジュール(pymongo,flask-bootstap等)  
+- サムネが表示されない場合はImageMagick,ffmpegのインストールを再確認して下さい
+- 動画再生はmpvといソフトに依存しています
 # Licence
 This software is released under the MIT License, see LICENSE.md.
 
