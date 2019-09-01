@@ -33,7 +33,7 @@ def show_all(data_all=[]):
     if (request.args.get( 'index_sort', type=str)):
         my_database.index_howto = request.args.get('index_sort',default='access_time', type=str)
     else:
-        my_database.index_howto = 'access_time'
+        my_database.index_howto = my_database.index_howto
     
     my_database.search_id = ''
     my_database.search = ''
@@ -209,13 +209,19 @@ def check_db():
         return redirect(url_for('select_db'))
 
 @app.route('/carousel')
-def carousel():
+def carousel(data_all=[]):
     global my_database
-    data_all=[]
+    
+    data_all.clear()
+        
+    if ( not request.args.get("database_name") is None ):  #従来のデータベース
+        my_database.__init__(str(request.args.get("database_name")), './static/tmp', 3, request.args.get("media_dir"))
     
     data_all = my_database.choice_moviefile('Random')
+    if(len(data_all) > 7):
+        print(len(data_all))
+        data_all.clear()
     databases = movie_database.get_database_info()
-
     return render_template('carousel.html', data_all=data_all,databases = databases ,database_name_now=my_database.database_name)
 
 if __name__ == '__main__':
