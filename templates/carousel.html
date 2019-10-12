@@ -28,7 +28,7 @@
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdown1">
           {% for database in databases %}
-          <a class="dropdown-item" href="/check_db?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}">{{database["name"]}}</a>
+          <a class="dropdown-item" href="/carousel?database_name={{database["name"]}}&media_dir={{database["media_dir"]}}">{{database["name"]}}</a>
           {% endfor %}
       </div>
     </div>
@@ -53,28 +53,45 @@
       </div>
     </div>
   </nav>
-
-  <div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
-    <div class="carousel-inner">
-    {% for samp in data_all %}
-        {% if loop.index0 == 0 %}
-            <div class="carousel-item active" data-interval="2000">
-                <img class="d-block w-50" src="{{ samp["thumnail_file"] }}" alt="{{samp["name"]}}">
-                <div class="carousel-caption d-none d-md-block">
-                <p><a href="/play?id_number={{ samp["_id"] }}"">{{samp["name"]}}</a></p>
-                </div>
+  <table class="table bg-dark">
+        <tbody>
+                <tr>
+                  
+                  <td><div id="carouselExampleFade" class="carousel slide carousel-fade" data-ride="carousel">
+                        <div class="carousel-inner">
+                        {% for samp in data_all %}
+                            {% if loop.index0 == 0 %}
+                                <div class="carousel-item active" data-interval="2000">
+                                    <img class="d-block w-50" src="{{ samp["thumnail_file"] }}" alt="{{samp["name"]}}">
+                                    <div class="carousel-caption d-none d-md-block">
+                                    <p><a href="/play?id_number={{ samp["_id"] }}"">{{samp["name"]}}</a></p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        
+                          <div class="carousel-item" data-interval="2000">
+                                <img class="d-block w-50" src="{{ samp["thumnail_file"] }}" alt="{{samp["name"]}}">
+                                <div class="carousel-caption d-none d-md-block">
+                                <p><a href="/play?id_number={{ samp["_id"] }}"">{{samp["name"]}}</a></p>
+                                </div>
+                          </div>
+                        {% endfor %}
+                        </div>
+                    </td>
+                    {% for samp in data_all %}
+                        <tr>
+                            <td>
+                            <img src="{{ samp["thumnail_file"] }}" alt="{{samp["name"]}}">
+                            <p><a href="/play?id_number={{ samp["_id"] }}"">{{samp["name"]}}</a></p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tr>
+                
+              </tbody>
+              <div>
+              <a type="button" class="btn btn-dark btn-block" href="/carousel" role="button">リロード</a>
             </div>
-        {% endif %}
-    
-      <div class="carousel-item" data-interval="2000">
-            <img class="d-block w-50" src="{{ samp["thumnail_file"] }}" alt="{{samp["name"]}}">
-            <div class="carousel-caption d-none d-md-block">
-            <p><a href="/play?id_number={{ samp["_id"] }}"">{{samp["name"]}}</a></p>
-            </div>
-      </div>
-    {% endfor %}
-    </div>
-    
-  </div>
+    </table>
 
 {% endblock %}

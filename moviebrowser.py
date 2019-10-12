@@ -32,8 +32,10 @@ def show_all(data_all=[]):
     databases = []
     if (request.args.get( 'index_sort', type=str)):
         my_database.index_howto = request.args.get('index_sort',default='access_time', type=str)
+        my_database.skip_number = 0
     else:
         my_database.index_howto = my_database.index_howto
+        
     
     my_database.search_id = ''
     my_database.search = ''

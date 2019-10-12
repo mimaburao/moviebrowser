@@ -74,7 +74,7 @@ class MovieDB:
         data_all : web表示用のデータ
         """
         if((skip == None) or (skip == '')):
-            self.skip_number = 0
+            self.skip_number = self.skip_number
         elif(skip == 'pre'):
             self.skip_number = self.skip_number - 50
             if(self.skip_number < 0):
@@ -314,20 +314,27 @@ class MovieDB:
         データベースのおすすめ的な抜き出し
         choice_menu="Random"  適当に抜き出す
         """
-        keys = []
-        key_list=[]
-        for i in self.thumnail_images:
-            keys.append(i)
-        random.shuffle(keys)
-        for i in range(7): #7個くらい取り出す。
-            key_list.append(keys[i])
-        if(choice_menu == 'Random'):
-            for i in key_list:
-                cursor = self.db.movie_client.find({"thumnail_file": i})
-                for data in cursor:
-                    self.search_id = data["_id"]
-                    choice_data = self.read_db_thumnail()
-        return choice_data    
+        data_all=[]
+        choice_cursor = []
+        cursor = list(self.db.movie_client.find())
+        random.shuffle(cursor)
+        if(len(cursor) < 7):  #データが7より少ない場合
+            max_number = len(cursor)
+        else:
+            max_number = 7
+        for i in range(max_number - 1):
+            choice_cursor.append(cursor[i])
+        for data in choice_cursor:
+            images_data = self.thumnail_images.get(data["thumnail_file"]) #サムネの画像を持っているか
+            data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
+            data["date"] = datetime.datetime.fromtimestamp(data["date"])
+            data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data["duration"] = datetime.timedelta(seconds= int(data["duration"]))
+            data["size"] = int(data["size"] / 1024 /1024) #Mbの表示のため
+            data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
+        return data_all
+
+        
 
     def __del__(self):
         self.client.close()
