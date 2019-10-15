@@ -88,8 +88,8 @@ class MovieDB:
         for data in cursor:
             images_data = self.thumnail_images.get(data["thumnail_file"]) #サムネの画像を持っているか
             data["thumnail_file"] = "data:image/png;base64,{}".format(images_data)
-            data["date"] = datetime.datetime.fromtimestamp(data["date"])
-            data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"])
+            data["date"] = datetime.datetime.fromtimestamp(data["date"]).strftime('%Y-%m-%d %H:%M')
+            data["access_time"] = datetime.datetime.fromtimestamp(data["access_time"]).strftime('%Y-%m-%d %H:%M')
             data["duration"] = datetime.timedelta(seconds= int(data["duration"]))
             data["size"] = int(data["size"] / 1024 /1024) #Mbの表示のため
             data_all.append(data) #日付はdatetimeの形で登録されているので正しい　2019-05-11
