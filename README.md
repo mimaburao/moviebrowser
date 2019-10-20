@@ -21,6 +21,7 @@ MongoDB 3.6+(on Docker)
 ffmpeg  
 Imagemagick-6+  
 mpv  
+SMPlayer  
 Linux Mint 19.1にて動作確認  
 
 # Setup

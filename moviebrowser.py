@@ -117,7 +117,7 @@ def play():
     global my_database
     filename = []
     for data in my_database.find( str(request.args.get('id_number'))):
-        args = ['mpv','--geometry=70%']
+        args = ['smplayer']
         args.append(data["filename"])
         try:
             subprocess.check_output(args)
