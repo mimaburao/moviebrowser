@@ -30,6 +30,8 @@ pip3にてflask-bootstrap,pymongo,joblib,memory-tempfileのインストール(�
 Dockerにてmongodを起動(port 28001, static/dbにボリュームマウント)
 mongo.shに参考の起動方法  
 ※memory_tempfileは現在（2019-06-02）そのままでは動かない。[修正方法](https://qiita.com/mimaburao/items/26e1463feb6397197232)  
+※memory_tempfile2.2.2（2020-02-01）の修正版では問題ないようだ。  
+
 * 初期化  
 python3 movibrowser.pyと実行する。  
 右上のプルダウンで「データベースの変更」を選択する。  
