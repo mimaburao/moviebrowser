@@ -6,10 +6,9 @@ movie thumnail manager
 <img src ="https://img.shields.io/badge/bootstrap4.0-green.svg">
 <img src ="https://img.shields.io/badge/MongoDB-green.svg">
 <img src ="https://img.shields.io/badge/Docker-green.svg">
-<img src ="https://img.shields.io/badge/Linux_Mint-v.19.1-green.svg">
+<img src ="https://img.shields.io/badge/Linux_Mint-v.19.3-green.svg">
 
 
-2019-05-27  
 ![sample](images/moviebrowser_sample01.mp4.gif)
 # Dependency
 Flask 1.0+ 
@@ -22,7 +21,7 @@ ffmpeg
 Imagemagick-6+  
 mpv  
 SMPlayer  
-Linux Mint 19.1にて動作確認  
+Linux Mint 19.3にて動作確認  
 
 # Setup
 ソフトウェアの管理にて、ffmepg,ImageMagick,mpvをインストール
